@@ -1194,11 +1194,12 @@ whole-stripe replacement), Path A is competitive or cheaper (a
 full-chunk overwrite avoids the epoch-open + finalize overhead
 Path B pays) -- CHUNK_WRITE remains the correct choice there.
 
-# Acknowledgements
+# Acknowledgments
+{:numbered="false"}
 
 The delta-write technique described here builds on longstanding
 practice in erasure-coded storage systems: NetApp WAFL's parity
 delta logic, Linux md RAID-5/6's P-shard XOR delta path, and Ceph's
 partial-parity-update optimization for RADOS erasure-coded pools.
 The specific application to XOR-based Mojette in the pNFS
-data-server context arose from informal discussions at IETF 126.
+data-server context is due to David Flynn.
