@@ -43,7 +43,7 @@ informative:
 
 --- abstract
 
-The Flexible File Version 2 (FFv2) pNFS layout type
+The Flexible File Version 2 pNFS layout type
 {{I-D.haynes-nfsv4-flexfiles-v2}} defines a chunk-oriented
 data-server protocol in which every write is a full-chunk payload.
 For workloads that make small edits to files protected by an
@@ -61,7 +61,7 @@ the existing chunk state machine with no new commit protocol.
 
 # Introduction {#sec-introduction}
 
-The base Flexible File Version 2 (FFv2) specification
+The base Flexible File Version 2 specification
 {{I-D.haynes-nfsv4-flexfiles-v2}} defines the CHUNK_WRITE operation
 as the sole client-issued data-write operation against a data server.
 Each CHUNK_WRITE carries a full chunk payload -- either a block
@@ -122,8 +122,8 @@ the encoding-plus-checksum pair the layout already carries:
   qualifies, cryptographic hashes and modular-sum checksums do not.
 
 The client determines capability for a given layout by looking up
-the layout's declared encoding in the FFv2 Erasure Encoding Type
-Registry and its `ffv2m_checksum_algorithm` in the FFv2 Checksum
+the layout's declared encoding in the Erasure Encoding Type
+Registry and its `ffv2m_checksum_algorithm` in the Checksum
 Algorithm Registry, both established in the IANA Considerations of
 {{I-D.haynes-nfsv4-flexfiles-v2}}.  When both
 registry flags are set the client MAY issue CHUNK_XOR_DELTA against
@@ -137,20 +137,20 @@ already present.
 
 ## Relationship to Base Specification
 
-This document extends the FFv2 protocol family with one new
-operation (CHUNK_XOR_DELTA), one new error code
+This document extends the flexible file v2 layout protocol family with
+one new operation (CHUNK_XOR_DELTA), one new error code
 (NFS4ERR_DELTA_INCOMPLETE), one new advisory-warning code
 (NFS4ERR_DELTA_LOG_FULL), and additions to two IANA registries
-established by {{I-D.haynes-nfsv4-flexfiles-v2}}: the FFv2 Checksum
-Algorithm Registry and the FFv2 Erasure Encoding Type Registry.
-All mechanisms defined here reuse the chunk state machine,
-chunk_guard4 CAS primitive, repair protocol, and layout-revocation
-paths defined in {{I-D.haynes-nfsv4-flexfiles-v2}}.
+established by {{I-D.haynes-nfsv4-flexfiles-v2}}: the Checksum
+Algorithm Registry and the Erasure Encoding Type Registry.  All
+mechanisms defined here reuse the chunk state machine, chunk_guard4
+CAS primitive, repair protocol, and layout-revocation paths defined in
+{{I-D.haynes-nfsv4-flexfiles-v2}}.
 
 # Terminology {#sec-terminology}
 
-The terms *block*, *shard*, *chunk*, *chunk state machine*, *chunk
-generation*, *chunk owner*, and *projection* are defined in the base
+The terms block, shard, chunk, chunk state machine, chunk
+generation, chunk owner, and projection are defined in the base
 specification.  This document uses them without redefinition.
 
 Additional terms defined by this document:
@@ -172,9 +172,9 @@ delta epoch:
 
 delta log:
 
-: The per-chunk, in-DS record of deltas received during an active
-  delta epoch.  Each log entry records (sequence number, byte offset,
-  delta bytes).  The log is bounded in size and self-inverse:
+: The per-chunk, in-data-server record of deltas received during an
+  active delta epoch.  Each log entry records (sequence number, byte
+  offset, delta bytes).  The log is bounded in size and self-inverse:
   applying an entry a second time undoes it.
 
 XOR-linear encoding:
@@ -184,8 +184,8 @@ XOR-linear encoding:
   encoding where changing one source byte by delta D and applying
   the same D to each parity projection at the projection-specific
   offset preserves encode-correctness.  FFV2_ENCODING_MIRRORED (as
-  the degenerate identity-encoding case; every mirror is a byte-
-  identical replica), FFV2_ENCODING_MOJETTE_SYSTEMATIC (defined in
+  the degenerate identity-encoding case; every mirror is a
+  byte-identical replica), FFV2_ENCODING_MOJETTE_SYSTEMATIC (defined in
   the Mojette Transform Encoding section of
   {{I-D.haynes-nfsv4-flexfiles-v2}}; the underlying discrete
   Radon transform is due to {{MOJETTE-1995}}), and
@@ -226,13 +226,13 @@ the following hold, as determined by registry lookup against the
 chunk's governing layout:
 
 - The layout's declared encoding (see the base specification's
-  `ffv2_coding_type4` and the FFv2 Erasure Encoding Type Registry in
+  `ffv2_coding_type4` and the Erasure Encoding Type Registry in
   {{I-D.haynes-nfsv4-flexfiles-v2}}) has the flag
   EC_ENC_FLAGS_XOR_DELTA_CAPABLE set ({{sec-iana-encoding-flag}});
   i.e., the encoding is XOR-linear as defined in
   {{sec-terminology}}.
 - The layout's `ffv2m_checksum_algorithm` has the flag
-  CHECKSUM_FLAGS_XOR_AFFINE set in the FFv2 Checksum Algorithm
+  CHECKSUM_FLAGS_XOR_AFFINE set in the Checksum Algorithm
   Registry defined in {{I-D.haynes-nfsv4-flexfiles-v2}}
   ({{sec-iana-checksum-flag}}).
 
@@ -240,11 +240,11 @@ Capability is thus a derived, static property of the (encoding,
 checksum-algorithm) pair the layout already carries; no additional
 field is added to `ffv2_mirror4`.  A data server MUST reject
 CHUNK_XOR_DELTA against a chunk whose governing layout does not
-satisfy both conditions with NFS4ERR_NOTSUPP.  A client SHOULD
-perform the registry lookup at layout-grant time and cache the
-result for the layout's lifetime; the DS MUST perform the check on
-each operation received (the DS cannot assume clients have honoured
-the SHOULD).
+satisfy both conditions with NFS4ERR_NOTSUPP.  A client SHOULD perform
+the registry lookup at layout-grant time and cache the result for the
+layout's lifetime; the data server MUST perform the check on each
+operation received (the data server cannot assume clients have
+honored the SHOULD).
 
 Encodings that register EC_ENC_FLAGS_XOR_DELTA_CAPABLE MUST specify,
 in the document defining the encoding, the mapping from
@@ -274,13 +274,13 @@ extension is out of scope here.
 ## OPERATION NUMBER AND DISPATCH
 
 Following the pattern in
-{{I-D.haynes-nfsv4-flexfiles-v2}} for CHUNK_*
-operations, this document allocates operation number 100 and adds
+{{I-D.haynes-nfsv4-flexfiles-v2}} for CHUNK operations, this
+document allocates operation number 100 and adds
 corresponding arms to the argument and result unions.  All XDR
 definitions in this document use the language of {{RFC4506}}.  The
 allocation is coordinated with the rest of the flexfiles-v2
-family: main draft holds 78-95 (CHUNK_* plus TRUST/REVOKE
-family plus CHUNK_ESCROW_*), the proxy-server draft holds 96-99
+family: main draft holds 78-95 (CHUNK operations plus the TRUST/REVOKE
+family plus CHUNK_ESCROW operations), the proxy-server draft holds 96-99
 (PROXY_REGISTRATION through PROXY_CANCEL); this document takes
 100 as the next available NFSv4.2 opcode.
 
@@ -373,7 +373,7 @@ The operation targets the chunk identified by `cxda_chunk_offset`.
   will become the epoch's identifier if the open succeeds;
   `cxda_predecessor_guard` carries the guard value the client
   believes is currently COMMITTED on this chunk (the value under
-  which D_old was read).  The DS MUST:
+  which D_old was read).  The data server MUST:
 
     (1) Reject with NFS4ERR_CHUNK_GUARDED if any other delta epoch
         (owned by any client) is currently open on this chunk.
@@ -385,57 +385,59 @@ The operation targets the chunk identified by `cxda_chunk_offset`.
         PENDING guard and allocate a fresh delta log for the chunk
         keyed by (cxda_guard, cxda_owner).
 
-  Retransmit handling: if the DS receives an EPOCH_OPEN whose
+  Retransmit handling: if the data server receives an EPOCH_OPEN whose
   (cxda_guard, cxda_owner) exactly matches an already-open epoch it
-  owns, the DS MUST treat this as a retransmit of the original
+  owns, the data server MUST treat this as a retransmit of the original
   request and return the original success response, not
   NFS4ERR_CHUNK_GUARDED.  This preserves idempotent replay under
   RPC retransmission (see {{sec-concurrency}}).
-- CHUNK_XOR_DELTA_FLAGS_EPOCH_CONTINUE indicates the operation is
-  part of an already-open epoch.  The DS MUST verify that the epoch
-  identified by (cxda_guard, cxda_owner) is open and that
+- CHUNK_XOR_DELTA_FLAGS_EPOCH_CONTINUE indicates the operation is part
+  of an already-open epoch.  The data server MUST verify that the
+  epoch identified by (cxda_guard, cxda_owner) is open and that
   `cxda_owner` matches the owner of the open epoch; mismatch is
   rejected with NFS4ERR_CHUNK_GUARDED.  `cxda_predecessor_guard` is
-  ignored on EPOCH_CONTINUE operations; the DS SHOULD verify it is
-  present in the wire message (per XDR) but MUST NOT use its value
-  to gate acceptance.
-Exactly one of EPOCH_OPEN or EPOCH_CONTINUE MUST be set; setting
-neither or both MUST be rejected with NFS4ERR_INVAL.  Bit value
-0x00000004 in cxda_flags is reserved (formerly intended as an
-explicit EPOCH_CLOSE bit; epoch closure is instead signalled by a
-subsequent CHUNK_FINALIZE, see {{sec-state-machine}}).  Any other
-bit set in cxda_flags MUST be rejected with NFS4ERR_INVAL to allow
-forward-compatible flag additions.
+  ignored on EPOCH_CONTINUE operations; the data server SHOULD verify
+  it is present in the wire message (per XDR) but MUST NOT use its
+  value to gate acceptance.  Exactly one of EPOCH_OPEN or
+  EPOCH_CONTINUE MUST be set; setting neither or both MUST be rejected
+  with NFS4ERR_INVAL.  Bit value 0x00000004 in cxda_flags is reserved
+  (formerly intended as an explicit EPOCH_CLOSE bit; epoch closure is
+  instead signalled by a subsequent CHUNK_FINALIZE, see
+  {{sec-state-machine}}).  Any other bit set in cxda_flags MUST be
+  rejected with NFS4ERR_INVAL to allow forward-compatible flag
+  additions.
 
 `cxda_deltas` is a bounded array of delta entries; the wire XDR bounds
 the array at 8 entries per operation, and the sum of `cxde_delta`
-lengths across all entries in a single operation MUST NOT exceed
-65536 bytes.  A DS SHOULD reject an operation exceeding either limit
-with NFS4ERR_INVAL rather than accepting a truncated set.
+lengths across all entries in a single operation MUST NOT exceed 65536
+bytes.  A data server SHOULD reject an operation exceeding either
+limit with NFS4ERR_INVAL rather than accepting a truncated set.
 
-Each entry carries a monotonic sequence number `cxde_seq` (client-
-chosen, MUST strictly increase across all CHUNK_XOR_DELTA operations
+Each entry carries a monotonic sequence number `cxde_seq`
+(client-chosen, MUST strictly increase across all CHUNK_XOR_DELTA
+operations
 within an epoch), a byte offset `cxde_bin_offset` within the chunk,
-and the delta bytes themselves.  The DS applies each entry by XORing
-`cxde_delta` into stored-chunk bytes `[cxde_bin_offset, cxde_bin_offset
-+ len(cxde_delta))`.  Delta entries within a single operation MAY be
-applied by the DS in any order, since XOR is commutative and
-associative; the sequence number is recorded per entry for later
-completeness checking at CHUNK_FINALIZE time.
+and the delta bytes themselves.  The data server applies each entry by
+XORing `cxde_delta` into stored-chunk bytes `[cxde_bin_offset,
+cxde_bin_offset + len(cxde_delta))`.  Delta entries within a single
+operation MAY be applied by the data server in any order, since XOR is
+commutative and associative; the sequence number is recorded per entry
+for later completeness checking at CHUNK_FINALIZE time.
 
-The DS MUST reject with NFS4ERR_INVAL any entry whose byte range
-extends beyond the chunk's declared size, or whose `cxde_bin_offset`
-overlaps another entry's byte range within the same operation (to
-preserve deterministic replay across implementations).  Cross-
-operation range overlap within an epoch is permitted -- the second
-delta effectively updates the running XOR state.
+The data server MUST reject with NFS4ERR_INVAL any entry whose byte
+range extends beyond the chunk's declared size, or whose
+`cxde_bin_offset` overlaps another entry's byte range within the same
+operation (to preserve deterministic replay across implementations).
+Cross- operation range overlap within an epoch is permitted -- the
+second delta effectively updates the running XOR state.
 
 ## RETURN VALUES
 
-On success the DS returns:
+On success the data server returns:
 
-- `cxdr_high_water_seq`: the highest sequence number the DS has seen
-  in this epoch, including all entries in the current operation.
+- `cxdr_high_water_seq`: the highest sequence number the data server
+  has seen in this epoch, including all entries in the current
+  operation.
 - `cxdr_log_bytes_used`: the current delta-log occupancy for this
   chunk-epoch, in bytes.
 - `cxdr_log_bytes_available`: the log's remaining capacity, in bytes.
@@ -444,7 +446,7 @@ On success the DS returns:
   client MUST close the epoch with CHUNK_FINALIZE or CHUNK_ROLLBACK
   before starting a new one.
 
-On failure the DS returns the appropriate nfsstat4 code and no
+On failure the data server returns the appropriate nfsstat4 code and no
 partial application is visible via CHUNK_READ; see
 {{sec-state-machine}} for the visibility rules.
 
@@ -469,12 +471,12 @@ CHECKSUM_ALG_CRC32C set this flag; CHECKSUM_ALG_FLETCHER4 and the
 cryptographic-hash algorithms (CHECKSUM_ALG_SHA256,
 CHECKSUM_ALG_SHA512, CHECKSUM_ALG_BLAKE3) do not.
 
-At CHUNK_FINALIZE time -- not per CHUNK_XOR_DELTA -- the DS is
-responsible for computing the new envelope checksum.  For an
+At CHUNK_FINALIZE time -- not per CHUNK_XOR_DELTA -- the data server
+is responsible for computing the new envelope checksum.  For an
 XOR-affine checksum (see the terminology definition in
-{{sec-terminology}} for the exact identity), the DS MAY compute the
-new checksum incrementally.  Let L be the length of the covered
-envelope (chunk_header || chunk_data), let X be the pre-delta
+{{sec-terminology}} for the exact identity), the data server MAY
+compute the new checksum incrementally.  Let L be the length of the
+covered envelope (chunk_header || chunk_data), let X be the pre-delta
 envelope contents, and let Y be the post-delta envelope contents
 zero-extended to length L in the same layout.  The affine identity
 gives:
@@ -484,7 +486,7 @@ gives:
 where (X XOR Y) is the L-byte sequence containing zeros everywhere
 X and Y agree, and the applied header + data delta bytes at their
 canonical byte offsets everywhere they differ.  Equivalently, using
-the zero-initialised "raw" form of f (per {{sec-terminology}}):
+the zero-initialized "raw" form of f (per {{sec-terminology}}):
 
     f_raw(Y) = f_raw(X) XOR f_raw(X XOR Y)
 
@@ -494,29 +496,29 @@ covered length compute identically.
 
 Full-recomputation is also permitted and is required for algorithms
 that do not implement the incremental combine.  In either case the
-client does not supply the envelope checksum; the DS is the sole
-computing authority.  Implementations MUST NOT combine partial
-checksums across differing covered lengths; the affine correction
-term is a function of length and combining across differing lengths
+client does not supply the envelope checksum; the data server is the
+sole computing authority.  Implementations MUST NOT combine partial
+checksums across differing covered lengths; the affine correction term
+is a function of length and combining across differing lengths
 silently yields the wrong value.
 
-At CHUNK_FINALIZE time the DS MUST include the newly computed
+At CHUNK_FINALIZE time the data server MUST include the newly computed
 envelope checksum in its response, in the same field
 {{I-D.haynes-nfsv4-flexfiles-v2}} uses for CHUNK_WRITE-driven
 finalization.  A client that participated in the epoch SHOULD verify
-this against its own predicted post-delta checksum computed from
-D_old and the delta sequence (using the same affine identity
-above); a client that performs this verification MUST treat a
-mismatch as chunk corruption (the same treatment applied to a
-CHUNK_READ checksum mismatch on COMMITTED data).  End-to-end
-verification is SHOULD rather than MUST because the DS's checksum
-is itself protected by the base checksum-registry semantics; the
-client-side check adds a second, independent detector for
-lost-or-corrupt-delta cases that the DS side alone cannot detect.
+this against its own predicted post-delta checksum computed from D_old
+and the delta sequence (using the same affine identity above); a
+client that performs this verification MUST treat a mismatch as chunk
+corruption (the same treatment applied to a CHUNK_READ checksum
+mismatch on COMMITTED data).  End-to-end verification is SHOULD rather
+than MUST because the data server's checksum is itself protected by
+the base checksum-registry semantics; the client-side check adds a
+second, independent detector for lost-or-corrupt-delta cases that the
+data server side alone cannot detect.
 
 # Delta Epochs and Per-Chunk State {#sec-epochs}
 
-A *delta epoch* is the unit of delta-write atomicity.  An epoch is
+A delta epoch is the unit of delta-write atomicity.  An epoch is
 opened by a CHUNK_XOR_DELTA with EPOCH_OPEN set; extended by zero or
 more CHUNK_XOR_DELTA operations with EPOCH_CONTINUE set; and closed
 by a CHUNK_FINALIZE on the same chunk (or aborted by CHUNK_ROLLBACK).
@@ -530,8 +532,8 @@ specification's single-writer-per-chunk model.
 
 ## Delta Log Structure
 
-For each open epoch the DS maintains a delta log recording every
-applied delta entry.  Each log record contains at minimum:
+For each open epoch the data server maintains a delta log recording
+every applied delta entry.  Each log record contains at minimum:
 
 - The delta entry's `cxde_seq`
 - The delta entry's `cxde_bin_offset` and length
@@ -539,22 +541,24 @@ applied delta entry.  Each log record contains at minimum:
 
 Because XOR entries are self-inverse (applying an entry a second time
 undoes it), the same log serves as both the redo log (for restart
-after DS crash mid-epoch) and the undo log (for CHUNK_ROLLBACK).
+after data server crash mid-epoch) and the undo log (for
+CHUNK_ROLLBACK).
 
 ## Log Size Bound and Overflow
 
-The DS MUST bound the per-chunk delta log to a fixed maximum size, at
-minimum:
+The data server MUST bound the per-chunk delta log to a fixed maximum
+size, at minimum:
 
     max(4096, min(chunk_size / 4, 65536)) bytes
 
-A conforming DS MAY implement a larger bound.  The DS reports current
-occupancy and remaining capacity in every CHUNK_XOR_DELTA response
-(`cxdr_log_bytes_used`, `cxdr_log_bytes_available`).
+A conforming data server MAY implement a larger bound.  The data
+server reports current occupancy and remaining capacity in every
+CHUNK_XOR_DELTA response (`cxdr_log_bytes_used`,
+`cxdr_log_bytes_available`).
 
 When a client issues a CHUNK_XOR_DELTA whose acceptance would exceed
-the bound, the DS MUST return NFS4ERR_DELTA_LOG_FULL and MUST NOT
-apply any entry in that operation (all-or-nothing per operation).
+the bound, the data server MUST return NFS4ERR_DELTA_LOG_FULL and MUST
+NOT apply any entry in that operation (all-or-nothing per operation).
 The client's options on receiving NFS4ERR_DELTA_LOG_FULL are:
 
 - Close the current epoch with CHUNK_FINALIZE and open a new one
@@ -565,15 +569,15 @@ The client's options on receiving NFS4ERR_DELTA_LOG_FULL are:
 
 ## Log Retention and Garbage Collection
 
-The delta log for an epoch is retained by the DS until the epoch is
-either committed (CHUNK_FINALIZE followed by CHUNK_COMMIT) or aborted
-(CHUNK_ROLLBACK).  On commit, the log is discarded once the DS has
-transitioned the chunk to COMMITTED with the new generation; on
-abort, the log is discarded immediately after the DS has XORed every
-log entry back into the chunk (undo).
+The delta log for an epoch is retained by the data server until the
+epoch is either committed (CHUNK_FINALIZE followed by CHUNK_COMMIT) or
+aborted (CHUNK_ROLLBACK).  On commit, the log is discarded once the
+data server has transitioned the chunk to COMMITTED with the new
+generation; on abort, the log is discarded immediately after the data
+server has XORed every log entry back into the chunk (undo).
 
 The chunk-generation retention rule defined in
-{{I-D.haynes-nfsv4-flexfiles-v2}} -- that a DS retains the
+{{I-D.haynes-nfsv4-flexfiles-v2}} -- that a data server retains the
 last COMMITTED generation of each chunk until superseded by a newer
 COMMIT -- applies unchanged.  The delta log is auxiliary state that
 lives alongside the PENDING/FINALIZED generation being built up, not
@@ -582,32 +586,32 @@ a replacement for that state.
 # Concurrency Semantics {#sec-concurrency}
 
 Within a single open epoch the delta log establishes a total order
-over applied entries by `cxde_seq`, but the *effect* of applied
+over applied entries by `cxde_seq`, but the effect of applied
 entries at any point in the epoch is order-independent (XOR is
 commutative).  The sequence number exists to:
 
-- Detect gaps at CHUNK_FINALIZE time (the DS asserts contiguity from
-  1 to `cxdr_high_water_seq`)
-- Support idempotent replay across RPC retransmissions (a DS
+- Detect gaps at CHUNK_FINALIZE time (the data server asserts
+  contiguity from 1 to `cxdr_high_water_seq`)
+- Support idempotent replay across RPC retransmissions (a data server
   receiving a duplicate `cxde_seq` MUST NOT re-apply the delta;
   it MUST return the same result as the original response)
 
-The DS is NOT required to maintain per-byte or per-bin lock state.
-The single-writer-per-epoch invariant (enforced by the CAS on
+The data server is NOT required to maintain per-byte or per-bin lock
+state.  The single-writer-per-epoch invariant (enforced by the CAS on
 EPOCH_OPEN) is sufficient to prevent conflicting concurrent writes.
 Cross-client concurrent edits to disjoint byte ranges of the same
 chunk are NOT supported in this specification; the second client
-receives NFS4ERR_CHUNK_GUARDED on its EPOCH_OPEN and MUST fall back
-to CHUNK_WRITE.  Future extensions MAY relax this constraint by
-introducing per-bin versioning; that machinery is not required for
-the HPC checkpoint workload, whose block-alignment discipline (base
-spec Use Cases section) already gives stable per-chunk ownership
-within a checkpoint interval.
+receives NFS4ERR_CHUNK_GUARDED on its EPOCH_OPEN and MUST fall back to
+CHUNK_WRITE.  Future extensions MAY relax this constraint by
+introducing per-bin versioning; that machinery is not required for the
+HPC checkpoint workload, whose block-alignment discipline (base spec
+Use Cases section) already gives stable per-chunk ownership within a
+checkpoint interval.
 
 ## Split-Open Recovery {#sec-split-open}
 
 Because a client opens the epoch independently against each of the
-chunk's k+m projection DSes, two clients A and B racing for the
+chunk's k+m projection data servers, two clients A and B racing for the
 same chunk can produce a split-open outcome: A wins EPOCH_OPEN on
 some projections, B wins on others.  Neither can then close its
 epoch on the full projection set, and both sets of deltas remain
@@ -629,12 +633,12 @@ crashes mid-recovery relies on lease-expiry rollback per
 Idempotency across RPC retransmission is achieved by the sequence
 number + CAS-guard pair.  A client retrying a CHUNK_XOR_DELTA after
 network loss re-uses the same (cxda_guard, cxda_owner, cxde_seq)
-tuple; the DS deduplicates using the recorded sequence number and
-returns the same response.  Retransmit handling for EPOCH_OPEN
+tuple; the data server deduplicates using the recorded sequence number
+and returns the same response.  Retransmit handling for EPOCH_OPEN
 specifically is normatively described in the CHUNK_XOR_DELTA
-DESCRIPTION section: a duplicate EPOCH_OPEN whose
-(cxda_guard, cxda_owner) matches an already-open epoch MUST be
-served as a retransmit, not rejected with NFS4ERR_CHUNK_GUARDED.
+DESCRIPTION section: a duplicate EPOCH_OPEN whose (cxda_guard,
+cxda_owner) matches an already-open epoch MUST be served as a
+retransmit, not rejected with NFS4ERR_CHUNK_GUARDED.
 
 # Interaction with the Chunk State Machine {#sec-state-machine}
 
@@ -643,7 +647,7 @@ The Chunk State Machine section of
 machine with three main states -- PENDING, FINALIZED, COMMITTED --
 and the operations that transition between them.  This document adds
 no new states and no new transitions.  It defines CHUNK_XOR_DELTA as
-a *third producer of PENDING generations*, alongside CHUNK_WRITE and
+a third producer of PENDING generations, alongside CHUNK_WRITE and
 CHUNK_WRITE_REPAIR.
 
 ## Visibility Rules
@@ -654,7 +658,7 @@ without modification.  In particular:
 
 - Deltas applied during an open epoch are NOT visible to CHUNK_READ
   until the epoch has been closed by CHUNK_FINALIZE + CHUNK_COMMIT.
-- During an open epoch the DS retains the prior COMMITTED chunk
+- During an open epoch the data server retains the prior COMMITTED chunk
   contents (already required by
   {{I-D.haynes-nfsv4-flexfiles-v2}} for concurrent-reader
   consistency).  CHUNK_READ served from that state is unchanged by
@@ -663,7 +667,7 @@ without modification.  In particular:
 ## CHUNK_FINALIZE Semantics for a Delta Epoch
 
 When the client issues CHUNK_FINALIZE against a chunk that has an
-open delta epoch, the DS MUST:
+open delta epoch, the data server MUST:
 
 - Verify that the recorded delta-log sequence numbers form a
   contiguous range from 1 to some N (no gaps).  If gaps are present,
@@ -682,7 +686,7 @@ open delta epoch, the DS MUST:
 The CHUNK_FINALIZE result union defined in
 {{I-D.haynes-nfsv4-flexfiles-v2}} does not carry a
 missing-seq array on error return, so the client cannot directly
-enumerate which sequence numbers the DS is missing.  Until a
+enumerate which sequence numbers the data server is missing.  Until a
 future revision of the CHUNK_FINALIZE result union provides such
 enumeration, the client MUST implement gap recovery as follows:
 
@@ -692,10 +696,10 @@ enumeration, the client MUST implement gap recovery as follows:
 2. On NFS4ERR_DELTA_INCOMPLETE from CHUNK_FINALIZE, the client
    MUST re-issue every `cxde_seq` still in its outstanding set as
    an EPOCH_CONTINUE operation.  Duplicates already seen by the
-   DS are deduplicated per {{sec-concurrency}} (return the
+   data server are deduplicated per {{sec-concurrency}} (return the
    original response with no re-apply); genuine gaps are filled.
 3. Once the outstanding set is empty, the client MUST re-issue
-   CHUNK_FINALIZE.  If the DS still returns
+   CHUNK_FINALIZE.  If the data server still returns
    NFS4ERR_DELTA_INCOMPLETE, the client MUST issue CHUNK_ROLLBACK
    and restart the edit sequence as CHUNK_WRITE operations under
    a fresh epoch (the epoch is unrecoverable).
@@ -712,10 +716,11 @@ FINALIZED generation becomes COMMITTED atomically.
 
 ## CHUNK_ROLLBACK Semantics for a Delta Epoch
 
-CHUNK_ROLLBACK against a chunk with an open delta epoch causes the DS
-to re-apply every log entry (XORing each into the chunk a second
-time), restoring the pre-epoch bytes.  The log is then discarded and
-the chunk_guard4 CAS state returns to what it was at EPOCH_OPEN.
+CHUNK_ROLLBACK against a chunk with an open delta epoch causes the
+data server to re-apply every log entry (XORing each into the chunk a
+second time), restoring the pre-epoch bytes.  The log is then
+discarded and the chunk_guard4 CAS state returns to what it was at
+EPOCH_OPEN.
 
 # Repair-Path Interaction {#sec-repair}
 
@@ -725,23 +730,21 @@ of missing or damaged chunks from surviving projections.  This
 document adds one new rule for the repair coordinator:
 
 - Before reconstructing a chunk from the majority of surviving
-  projections, the repair coordinator MUST query each surviving DS
-  for the presence of an open delta epoch on that chunk.
-- If any surviving DS reports an open delta epoch, the repair
+  projections, the repair coordinator MUST query each surviving data
+  server for the presence of an open delta epoch on that chunk.
+- If any surviving data server reports an open delta epoch, the repair
   coordinator MUST NOT reconstruct from the majority.  Instead, it
   MUST wait for the epoch to close (CHUNK_FINALIZE or
   CHUNK_ROLLBACK) before beginning reconstruction.
 - If the epoch's owner lease has expired, OR the epoch's owning
-  stateid has been revoked (per
-  {{I-D.haynes-nfsv4-flexfiles-v2}}), the repair
-  coordinator MUST drive CHUNK_ROLLBACK on each participating DS
-  (using the CAS guard from the epoch's OPEN record) and then
-  proceed with base-specification repair semantics on the resulting
-  pre-epoch generation.  Both triggers are wall-clock bounded --
-  lease-expiry by the server's lease-time attribute and stateid
-  revocation by the base specification's stateid-revocation paths
-  -- so repair
-  cannot stall indefinitely on a wedged writer.
+  stateid has been revoked (per {{I-D.haynes-nfsv4-flexfiles-v2}}),
+  the repair coordinator MUST drive CHUNK_ROLLBACK on each
+  participating data server (using the CAS guard from the epoch's OPEN
+  record) and then proceed with base-specification repair semantics on
+  the resulting pre-epoch generation.  Both triggers are wall-clock
+  bounded -- lease-expiry by the server's lease-time attribute and
+  stateid revocation by the base specification's stateid-revocation
+  paths -- so repair cannot stall indefinitely on a wedged writer.
 
 Rationale: if the epoch has partially applied to some but not all
 projections, reconstructing from the majority would silently commit
@@ -752,9 +755,9 @@ prevents this laundering path.
 Steady-state repair -- against chunks with no open delta epoch --
 is unchanged from {{I-D.haynes-nfsv4-flexfiles-v2}}.  The
 delta-log retention rule guarantees that at any moment either the
-pre-epoch generation is intact on every participating DS (open
+pre-epoch generation is intact on every participating data server (open
 epoch case) or a common COMMITTED generation is present on the
-surviving DSes (steady-state case).
+surviving data servers (steady-state case).
 
 # Layout Revocation and Stateid Semantics {#sec-revocation}
 
@@ -762,7 +765,7 @@ CB_LAYOUTRECALL is defined in {{RFC5661}}; the stateid-revocation
 paths (TRUST_STATEID, REVOKE_STATEID, BULK_REVOKE_STATEID) are
 defined in {{I-D.haynes-nfsv4-flexfiles-v2}}.  A delta
 epoch is bound to the client's active layout and stateid; when either
-is revoked mid-epoch, the DS MUST:
+is revoked mid-epoch, the data server MUST:
 
 - Discard any in-flight CHUNK_XOR_DELTA operations for that
   (stateid, chunk) pair
@@ -781,7 +784,7 @@ stateid; the write-retry semantics of
 This resolves the "layout recalled mid-delta" failure mode without
 introducing a new commit protocol: the revocation paths of {{RFC5661}}
 and {{I-D.haynes-nfsv4-flexfiles-v2}} already tear
-down the client's authority to write, and the DS's duty on
+down the client's authority to write, and the data server's duty on
 revocation is to preserve the last-committed state -- which is
 exactly what pre-epoch rollback delivers.
 
@@ -812,76 +815,76 @@ CHUNK_XOR_DELTA MUST be issued over a transport that provides
 integrity protection at the RPC layer (for example RPCSEC_GSS with
 krb5i {{RFC5661}}, or an equivalent mechanism).  This requirement
 binds regardless of the transport-security posture of any other
-FFv2 data-server operation: a delta write applied to a projection
-whose integrity is not authenticated is indistinguishable at the
-DS from a forged write and cannot be reconciled by any downstream
-mechanism defined in this document.  The wire XDR carries no
-confidentiality of its own and its integrity is not
-self-authenticating.
+flexible file v2 layout data-server operation: a delta write applied
+to a projection whose integrity is not authenticated is
+indistinguishable at the data server from a forged write and cannot be
+reconciled by any downstream mechanism defined in this document.  The
+wire XDR carries no confidentiality of its own and its integrity is
+not self-authenticating.
 
 ## Denial of Service via Open Epochs
 
-Per {{sec-epochs}} the DS bounds the delta log for each open epoch,
-but the aggregate number of concurrently open epochs held by a
+Per {{sec-epochs}} the data server bounds the delta log for each open
+epoch, but the aggregate number of concurrently open epochs held by a
 single client across chunks and across files is not bounded by
 protocol.  A misbehaving or wedged writer that opens many epochs
 without finalizing can:
 
-- Accumulate per-epoch log state on each affected DS, consuming
-  bounded but non-trivial DS memory
+- Accumulate per-epoch log state on each affected data server, consuming
+  bounded but non-trivial data server memory
 - Stall repair on every affected chunk, since {{sec-repair}} requires
   the repair coordinator to wait for open epochs to close before
   reconstructing
 
-A DS SHOULD impose an implementation-defined aggregate cap on the
-number of concurrent open epochs per client stateid.  On hitting
+A data server SHOULD impose an implementation-defined aggregate cap on
+the number of concurrent open epochs per client stateid.  On hitting
 the cap, further EPOCH_OPEN attempts MUST be rejected with
 NFS4ERR_DELAY {{RFC5661}} (retriable at the RPC layer without
-protocol-level state change; more idiomatic than NFS4ERR_RESOURCE
-for pNFS layout-scoped exhaustion, which is not session-owning).
-A client that receives NFS4ERR_DELAY on EPOCH_OPEN MUST NOT retry
-the same EPOCH_OPEN immediately; it SHOULD first close (via
-CHUNK_FINALIZE or CHUNK_ROLLBACK) at least one of its currently
-open epochs, then MAY retry.  Retrying without closing an epoch is
-protocol-legal but will typically fail again with NFS4ERR_DELAY.
+protocol-level state change; more idiomatic than NFS4ERR_RESOURCE for
+pNFS layout-scoped exhaustion, which is not session-owning). A client
+that receives NFS4ERR_DELAY on EPOCH_OPEN MUST NOT retry the same
+EPOCH_OPEN immediately; it SHOULD first close (via CHUNK_FINALIZE or
+CHUNK_ROLLBACK) at least one of its currently open epochs, then MAY
+retry.  Retrying without closing an epoch is protocol-legal but will
+typically fail again with NFS4ERR_DELAY.
 
-The MDS's remedy against an unresponsive-writer scenario is layout
-recall or stateid revocation ({{sec-revocation}}), which forces DS
-rollback of all epochs bound to the revoked stateid.
+The metadata server's remedy against an unresponsive-writer scenario
+is layout recall or stateid revocation ({{sec-revocation}}), which
+forces data server rollback of all epochs bound to the revoked
+stateid.
 
 ## Retransmit Mismatch
 
-{{sec-concurrency}} specifies that a DS receiving a duplicate
+{{sec-concurrency}} specifies that a data server receiving a duplicate
 `cxde_seq` in the same epoch MUST NOT re-apply the delta and MUST
 return the same result as the original response.  If the retransmit
-carries the same (cxda_guard, cxda_owner, cxde_seq) but differs
-from the original in `cxde_bin_offset` or `cxde_delta` bytes, this
+carries the same (cxda_guard, cxda_owner, cxde_seq) but differs from
+the original in `cxde_bin_offset` or `cxde_delta` bytes, this
 indicates either a client bug or a wire-level tamper past the
-integrity protection in force.  The DS MUST reject such a mismatch
-with NFS4ERR_INVAL and SHOULD log the event for administrative
-review.
+integrity protection in force.  The data server MUST reject such a
+mismatch with NFS4ERR_INVAL and SHOULD log the event for
+administrative review.
 
 ## Log-Capacity Disclosure
 
 The response fields `cxdr_log_bytes_used` and
-`cxdr_log_bytes_available` disclose the DS's per-chunk delta-log
-occupancy to the client.  This disclosure is intentional -- the
-client needs the signal to decide whether to close-and-reopen an
+`cxdr_log_bytes_available` disclose the data server's per-chunk
+delta-log occupancy to the client.  This disclosure is intentional --
+the client needs the signal to decide whether to close-and-reopen an
 epoch or fall back to CHUNK_WRITE.  The information is limited to
 principals already authorized to issue CHUNK_XOR_DELTA against the
-chunk in question; no additional confidentiality boundary is
-crossed.
+chunk in question; no additional confidentiality boundary is crossed.
 
 ## Optional Ownership Restriction
 
-Deployments that wish to further narrow the writer set for a file
-MAY set the layout flag FFV2_FLAGS_DELTA_OWNER_ONLY (defined here,
-registered against `ffv2_layout_flags4`).  When set on a layout,
-DSes MUST reject CHUNK_XOR_DELTA whose `cxda_owner` does not match
+Deployments that wish to further narrow the writer set for a file MAY
+set the layout flag FFV2_FLAGS_DELTA_OWNER_ONLY (defined here,
+registered against `ffv2_layout_flags4`).  When set on a layout, data
+servers MUST reject CHUNK_XOR_DELTA whose `cxda_owner` does not match
 the `chunk_owner4` of the current COMMITTED generation of the target
 chunk.  This restricts delta epochs to the writer who last wrote the
-chunk, which is the natural semantics for the HPC checkpoint
-workload (each rank owns its stride).
+chunk, which is the natural semantics for the HPC checkpoint workload
+(each rank owns its stride).
 
 This flag is optional; deployments that do not need per-writer
 narrowing (single-writer files, files with a well-known writer set)
@@ -900,7 +903,7 @@ the capability conjunction structurally excludes them.
 
 # IANA Considerations {#sec-iana}
 
-Following the pattern established by the FFv2 family
+Following the pattern established by the flexible file v2 layout family
 ({{I-D.haynes-nfsv4-flexfiles-v2}}) that operation numbers
 in the NFSv4.2 opnum space are assigned by publication of the
 specifying document, operation number 100 is assigned to
@@ -973,7 +976,7 @@ in {{sec-terminology}}; clear otherwise.  Initial assignments:
   semantic justification is that XOR-affinity is a property of
   the checksum function; there is no checksum function to fail
   the property when CHECKSUM_ALG_NONE is in use, so the property
-  holds vacuously.  The DS-side checksum-recompute path in
+  holds vacuously.  The data-server-side checksum-recompute path in
   {{sec-checksum}} is a no-op when CHECKSUM_ALG_NONE is
   configured.
 - CHECKSUM_ALG_CRC32: SET
@@ -993,11 +996,10 @@ correct answer for every entry, including CHECKSUM_ALG_NONE
 
 ## New Error Codes
 
-Following the pattern established by
-{{I-D.haynes-nfsv4-flexfiles-v2}} that nfsstat4 codes
-scoped to the FFv2 protocol family are assigned by publication of
-the specifying document (no IANA nfsstat4 registry exists), this
-document assigns:
+Following the pattern established by {{I-D.haynes-nfsv4-flexfiles-v2}}
+that nfsstat4 codes scoped to the flexible file v2 layout protocol
+family are assigned by publication of the specifying document (no IANA
+nfsstat4 registry exists), this document assigns:
 
 - NFS4ERR_DELTA_INCOMPLETE = 10110: returned by CHUNK_FINALIZE when
   the recorded delta-log sequence numbers do not form a contiguous
@@ -1008,12 +1010,12 @@ document assigns:
 
 No IANA action is requested for these codes.  The values 10110 and
 10111 are chosen to sit above the base specification's cluster (10100 =
-NFS4ERR_CHUNK_GUARDED and neighbours) with a gap for future
-CHUNK_* codes.
+NFS4ERR_CHUNK_GUARDED and neighbors) with a gap for future
+CHUNK operation codes.
 
 ## New Layout Flag
 
-Following the same pattern (no IANA registry for FFv2 layout
+Following the same pattern (no IANA registry for flexible file v2 layout
 flags), this document assigns:
 
 - FFV2_FLAGS_DELTA_OWNER_ONLY = 0x00000100: restricts
@@ -1021,7 +1023,7 @@ flags), this document assigns:
   chunk.
 
 The bit value 0x00000100 is chosen to sit clear of
-FFV2_FLAGS_ONLY_ONE_WRITER (0x00000010, base FFv2 spec) and the
+FFV2_FLAGS_ONLY_ONE_WRITER (0x00000010, base specification) and the
 low-order bits inherited from ff_flags4.  No IANA action is
 requested.
 
@@ -1051,21 +1053,21 @@ a canonical HPC checkpoint workload.
 Per-rank per-interval work: 256 writes of 4 KiB each.  Each 4 KiB
 write lives inside a distinct stripe; each stripe's 12 projections
 (8 data + 4 parity in FFV2_ENCODING_MOJETTE_SYSTEMATIC terms) live
-on the 12 DSes.
+on the 12 data servers.
 
 ## Path A: Base CHUNK_WRITE
 
 In FFV2_ENCODING_MOJETTE_SYSTEMATIC at k=8 m=4, each of the 8 data
 projections stores a distinct data shard and each of the 4 parity
 projections is an XOR combination of the data shards.  A 4 KiB edit
-inside data shard i affects data DS i (whose 256 KiB chunk is
-rewritten with the mutated shard) plus all 4 parity DSes (each
-storing a fresh XOR of the 8 data shards).  Five DSes receive
-CHUNK_WRITE; the seven unaffected data DSes are untouched.
+inside data shard i affects data server i (whose 256 KiB chunk is
+rewritten with the mutated shard) plus all 4 parity data servers (each
+storing a fresh XOR of the 8 data shards).  Five data servers receive
+CHUNK_WRITE; the seven unaffected data servers are untouched.
 
 For each 4 KiB write the client MUST:
 
-1. Read the affected data shard from data DS i (256 KiB in, if not
+1. Read the affected data shard from data server i (256 KiB in, if not
    cached)
 2. Compute the new data shard (256 KiB output)
 3. Re-encode all 4 parity projections (256 KiB each x 4 = 1 MiB
@@ -1077,8 +1079,8 @@ For each 4 KiB write the client MUST:
 Per-rank per-write wire cost (Path A, warm-cache case where the
 client already has D_old):
 
-- Data DS i CHUNK_WRITE payload: 256 KiB (full new chunk)
-- 4 x parity DS CHUNK_WRITE payload: 4 x 256 KiB = 1 MiB
+- Data server i CHUNK_WRITE payload: 256 KiB (full new chunk)
+- 4 x parity data server CHUNK_WRITE payload: 4 x 256 KiB = 1 MiB
 - Total wire out per write: 1.25 MiB
 - Per-rank per-interval: 256 writes x 1.25 MiB = 320 MiB
 - Aggregate across 1 000 ranks per 10-second interval: 312.5 GiB
@@ -1098,11 +1100,11 @@ overheads.
 For each 4 KiB write the client:
 
 1. Reads the current 4 KiB of the affected data shard (from data
-   DS i) if not cached -- 4 KiB in
+   data server i) if not cached -- 4 KiB in
 2. XORs old with new to produce a 4 KiB delta
-3. Sends CHUNK_XOR_DELTA(EPOCH_OPEN + entry) to the 4 parity DSes
-   with the 4 KiB delta payload each
-4. Also issues CHUNK_XOR_DELTA against the data DS i for its own
+3. Sends CHUNK_XOR_DELTA(EPOCH_OPEN + entry) to the 4 parity data
+   servers with the 4 KiB delta payload each
+4. Also issues CHUNK_XOR_DELTA against the data server i for its own
    byte-range change.  (The base CHUNK_WRITE path in
    {{I-D.haynes-nfsv4-flexfiles-v2}} is a
    whole-chunk-generation producer and does not have a small-write
@@ -1114,15 +1116,15 @@ For each 4 KiB write the client:
 
 Per-rank per-write wire cost (Path B):
 
-- Data DS i CHUNK_XOR_DELTA payload:
+- Data server i CHUNK_XOR_DELTA payload:
   ~4 KiB + small envelope
-- 4 x parity DS CHUNK_XOR_DELTA payload: 4 x 4 KiB = 16 KiB
+- 4 x parity data server CHUNK_XOR_DELTA payload: 4 x 4 KiB = 16 KiB
 - Total wire out per write: ~20 KiB
 - Per-rank per-interval: 256 writes x 20 KiB = 5 MiB
 - Aggregate across 1 000 ranks per 10-second interval: ~5 GiB
 
 Per-write client compute: one XOR of 4 KiB (nanoseconds), plus
-per-parity-DS RPC setup.  No Mojette re-encode.
+per-parity-data-server RPC setup.  No Mojette re-encode.
 
 ## Cost Comparison
 
@@ -1144,17 +1146,16 @@ dedicated 10 Gbps NIC (~1.19 GiB/s) this is a lower bound of
 checkpoint interval considered in isolation.  The problem is not
 per-rank wall clock; it is aggregate contention.
 
-Aggregate across 1 000 ranks per interval: Path A is 312.5 GiB.
-On a shared fabric where per-DS ingress and cross-rank bandwidth
-compete, this saturates commodity checkpoint fabrics -- a
-100 GbE core (~11.9 GiB/s) needs ~26 s just to drain the write
-volume, exceeding the interval and backlogging subsequent
-checkpoints.  Path B's 5 GiB per interval per 1 000 ranks (~62x
-reduction) drains in roughly ~0.4 s on the same fabric,
-comfortably fitting the interval with headroom for reads,
-callbacks, and interference.  The point of the extension is not
-the per-rank wall clock but the aggregate-fabric budget:
-delta writes convert an at-the-fabric-limit workload into a
+Aggregate across 1 000 ranks per interval: Path A is 312.5 GiB. On a
+shared fabric where per-data-server ingress and cross-rank bandwidth
+compete, this saturates commodity checkpoint fabrics -- a 100 GbE core
+(~11.9 GiB/s) needs ~26 s just to drain the write volume, exceeding
+the interval and backlogging subsequent checkpoints.  Path B's 5 GiB
+per interval per 1 000 ranks (~62x reduction) drains in roughly ~0.4 s
+on the same fabric, comfortably fitting the interval with headroom for
+reads, callbacks, and interference.  The point of the extension is not
+the per-rank wall clock but the aggregate-fabric budget: delta writes
+convert an at-the-fabric-limit workload into a
 comfortably-under-the-limit workload.
 
 ## Assumptions and Caveats
