@@ -14,23 +14,14 @@ It applies to all three drafts:
 Keeping a single copy is deliberate: three copies would drift, and the
 rules were derived from one editorial pass over the base draft.
 
-## Known gaps in this draft
+## Conformance
 
-This draft predates the editorial pass and has not been swept yet. As of
-the guide's writing:
+This draft was brought into conformance in `284ba68`. The §11 pre-commit
+checks are clean; the only surviving short forms are sanctioned
+exceptions:
 
-| Rule | Occurrences here |
-|---|---|
-| `DS` / `DSes` in prose (§3.1) | 68 / 8 |
-| `FFv2` in body prose (§3.1) | 15 |
-| `CHUNK_*` glob in prose (§3.1) | 3 |
-| `MDS` in prose (§3.1) | 1 |
+- `DS` in one table cell, where column width dominates (§3.1).
+- `FFv2` in the front-matter `abbrev`, which is document metadata rather
+  than prose (§3.2).
 
-`DS` is the large one: this draft leans on the abbreviation throughout,
-and expanding it to "data server" will reflow most of the prose. That is
-the single biggest piece of conformance work outstanding in this family.
-
-Counts are raw matches; some will be legitimate exceptions (wire
-identifiers, table cells, ASCII artwork). Check against the exceptions in
-the guide before changing anything, and re-run the pre-commit greps in
-§11 afterwards.
+Re-run the §11 greps before each commit.
