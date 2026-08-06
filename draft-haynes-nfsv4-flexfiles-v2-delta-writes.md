@@ -150,8 +150,11 @@ CAS primitive, repair protocol, and layout-revocation paths defined in
 # Terminology {#sec-terminology}
 
 The terms block, shard, chunk, chunk state machine, chunk
-generation, chunk owner, and projection are defined in the base
-specification.  This document uses them without redefinition.
+generation, chunk owner, and projection are defined in
+{{I-D.haynes-nfsv4-flexfiles-v2}}, hereafter "the base
+specification".  This document uses them without redefinition, and
+cites the base specification again only when pointing at a specific
+rule or section within it.
 
 Additional terms defined by this document:
 
@@ -599,9 +602,9 @@ chunk are NOT supported in this specification; the second client
 receives NFS4ERR_CHUNK_GUARDED on its EPOCH_OPEN and MUST fall back to
 CHUNK_WRITE.  Future extensions MAY relax this constraint by
 introducing per-bin versioning; that machinery is not required for the
-HPC checkpoint workload, whose block-alignment discipline (base spec
-Use Cases section) already gives stable per-chunk ownership within a
-checkpoint interval.
+HPC checkpoint workload, whose block-alignment discipline (see the Use
+Cases section of {{I-D.haynes-nfsv4-flexfiles-v2}}) already gives
+stable per-chunk ownership within a checkpoint interval.
 
 ## Split-Open Recovery {#sec-split-open}
 
