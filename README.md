@@ -17,8 +17,8 @@ output.
 
 ## Scope
 
-The base FFv2 chunk protocol
-([`draft-haynes-nfsv4-flexfiles-v2-chunks`](https://github.com/ietf-wg-nfsv4/flexfiles-v2))
+The base FFv2 specification
+([`draft-haynes-nfsv4-flexfiles-v2`](https://github.com/ietf-wg-nfsv4/flexfiles-v2))
 makes `CHUNK_WRITE` the sole client-issued data write, and every
 `CHUNK_WRITE` carries a **full chunk payload**. For small edits inside
 larger chunks on an erasure-coded layout, that forces client-side
@@ -53,16 +53,18 @@ GC), concurrency and split-open recovery, interaction with
 revocation/stateid semantics.
 
 The motivating workload is the "multiple writers, disjoint regions"
-class from
-[`draft-haynes-nfsv4-flexfiles-v2-requirements`](https://github.com/ietf-wg-nfsv4/flexfiles-v2):
-HPC checkpointing where thousands of ranks write disjoint regions of
-the same file in lockstep. The draft includes a worked example at 1000
+class named in the Use Cases section of the base specification: HPC
+checkpointing where thousands of ranks write disjoint regions of the
+same file in lockstep. The draft includes a worked example at 1000
 ranks.
 
 ## Relation to the main draft
 
-- This draft normatively depends on the FFv2 requirements, chunks,
-  encoding-registry, Mojette, and trust-stateid drafts.
+- This draft normatively depends on
+  [`draft-haynes-nfsv4-flexfiles-v2`](https://github.com/ietf-wg-nfsv4/flexfiles-v2),
+  reusing its chunk state machine, `chunk_guard4` CAS primitive,
+  repair protocol, and layout-revocation paths, and adding to its
+  Checksum Algorithm and Erasure Encoding Type registries.
 - The extension is **optional**; a server that does not implement it
   continues to serve the base full-chunk `CHUNK_WRITE` path.
 

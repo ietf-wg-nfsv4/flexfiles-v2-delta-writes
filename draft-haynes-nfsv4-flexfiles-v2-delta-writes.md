@@ -29,19 +29,11 @@ author:
     email: loghyr@gmail.com
 
 normative:
-  RFC2119:
   RFC4506:
   RFC5661:
-  RFC8174:
-  I-D.haynes-nfsv4-flexfiles-v2-requirements:
-  I-D.haynes-nfsv4-flexfiles-v2-chunks:
-  I-D.haynes-nfsv4-flexfiles-v2-encoding-registry:
-  I-D.haynes-nfsv4-flexfiles-v2-mojette:
-  I-D.haynes-nfsv4-flexfiles-v2-trust-stateid:
+  I-D.haynes-nfsv4-flexfiles-v2:
 
 informative:
-  I-D.haynes-nfsv4-flexfiles-v2:
-  I-D.haynes-nfsv4-flexfiles-v2-layout:
   MOJETTE-1995:
     title: "The Mojette Transform: Application to Image Coding"
     author:
@@ -63,24 +55,20 @@ transmit a per-projection XOR delta directly to each data server
 holding a projection of the affected stripe; the data server
 applies the delta locally.  The extension is restricted to
 XOR-linear systematic encodings and XOR-affine checksums, using
-the existing chunk state machine
-({{I-D.haynes-nfsv4-flexfiles-v2-chunks}}) with no new commit
-protocol.
+the existing chunk state machine with no new commit protocol.
 
 --- middle
 
 # Introduction {#sec-introduction}
 
 The base Flexible File Version 2 (FFv2) specification
-{{I-D.haynes-nfsv4-flexfiles-v2}} and its chunk-operations companion
-{{I-D.haynes-nfsv4-flexfiles-v2-chunks}} define the CHUNK_WRITE
-operation as the sole client-issued data-write operation against a
-data server.  Each CHUNK_WRITE carries a full chunk payload -- either
-a block (for mirrored layouts) or a shard (for erasure-coded layouts)
--- which the data server places in the PENDING state and later
-transitions to FINALIZED and COMMITTED through the operations of the
-chunk state machine defined in
-{{I-D.haynes-nfsv4-flexfiles-v2-chunks}}.
+{{I-D.haynes-nfsv4-flexfiles-v2}} defines the CHUNK_WRITE operation
+as the sole client-issued data-write operation against a data server.
+Each CHUNK_WRITE carries a full chunk payload -- either a block
+(for mirrored layouts) or a shard (for erasure-coded layouts) --
+which the data server places in the PENDING state and later transitions
+to FINALIZED and COMMITTED through the operations of the chunk state
+machine defined in {{I-D.haynes-nfsv4-flexfiles-v2}}.
 
 For workloads with the following combination of properties, this
 model has an unavoidable wire-amplification cost:
@@ -95,13 +83,13 @@ model has an unavoidable wire-amplification cost:
 
 The paradigmatic example is the "Multiple writers, disjoint regions
 (rare)" workload class named in the Use Cases section of
-{{I-D.haynes-nfsv4-flexfiles-v2-requirements}}: high-performance
+{{I-D.haynes-nfsv4-flexfiles-v2}}: high-performance
 computing (HPC) checkpoint workloads in which thousands of ranks
-write disjoint regions of the same file in lockstep.  For a 16-byte edit inside a 256 KiB stripe, the base
-CHUNK_WRITE path costs approximately 256 KiB of stripe fetch plus
-384 KiB of new-stripe-plus-parity transmit per writer per checkpoint
-interval -- an amplification of roughly 4x10^4 over the logical
-edited bytes.
+write disjoint regions of the same file in lockstep.  For a 16-byte
+edit inside a 256 KiB stripe, the base CHUNK_WRITE path costs
+approximately 256 KiB of stripe fetch plus 384 KiB of
+new-stripe-plus-parity transmit per writer per checkpoint interval
+-- an amplification of roughly 4x10^4 over the logical edited bytes.
 
 When the erasure encoding is XOR-based, this amplification is
 avoidable.  If the client can compute the delta
@@ -134,10 +122,10 @@ the encoding-plus-checksum pair the layout already carries:
   qualifies, cryptographic hashes and modular-sum checksums do not.
 
 The client determines capability for a given layout by looking up
-the layout's declared encoding (in the encoding registry defined by
-{{I-D.haynes-nfsv4-flexfiles-v2-encoding-registry}}) and its
-`ffv2m_checksum_algorithm` (in the checksum algorithm registry
-defined by {{I-D.haynes-nfsv4-flexfiles-v2-chunks}}).  When both
+the layout's declared encoding in the FFv2 Erasure Encoding Type
+Registry and its `ffv2m_checksum_algorithm` in the FFv2 Checksum
+Algorithm Registry, both established in the IANA Considerations of
+{{I-D.haynes-nfsv4-flexfiles-v2}}.  When both
 registry flags are set the client MAY issue CHUNK_XOR_DELTA against
 that layout; when either is clear it MUST NOT.  No new field is
 added to `ffv2_mirror4`; capability is fully derivable from fields
@@ -152,14 +140,12 @@ already present.
 This document extends the FFv2 protocol family with one new
 operation (CHUNK_XOR_DELTA), one new error code
 (NFS4ERR_DELTA_INCOMPLETE), one new advisory-warning code
-(NFS4ERR_DELTA_LOG_FULL), and additions to the two IANA registries
-defined in {{I-D.haynes-nfsv4-flexfiles-v2-chunks}} (checksum
-algorithms) and
-{{I-D.haynes-nfsv4-flexfiles-v2-encoding-registry}} (erasure coding
-types).  All mechanisms defined here reuse the chunk state machine,
-chunk_guard4 CAS primitive, and repair protocol defined in
-{{I-D.haynes-nfsv4-flexfiles-v2-chunks}}, and the layout-revocation
-paths defined in {{I-D.haynes-nfsv4-flexfiles-v2-trust-stateid}}.
+(NFS4ERR_DELTA_LOG_FULL), and additions to two IANA registries
+established by {{I-D.haynes-nfsv4-flexfiles-v2}}: the FFv2 Checksum
+Algorithm Registry and the FFv2 Erasure Encoding Type Registry.
+All mechanisms defined here reuse the chunk state machine,
+chunk_guard4 CAS primitive, repair protocol, and layout-revocation
+paths defined in {{I-D.haynes-nfsv4-flexfiles-v2}}.
 
 # Terminology {#sec-terminology}
 
@@ -200,7 +186,8 @@ XOR-linear encoding:
   offset preserves encode-correctness.  FFV2_ENCODING_MIRRORED (as
   the degenerate identity-encoding case; every mirror is a byte-
   identical replica), FFV2_ENCODING_MOJETTE_SYSTEMATIC (defined in
-  {{I-D.haynes-nfsv4-flexfiles-v2-mojette}}; the underlying discrete
+  the Mojette Transform Encoding section of
+  {{I-D.haynes-nfsv4-flexfiles-v2}}; the underlying discrete
   Radon transform is due to {{MOJETTE-1995}}), and
   FFV2_ENCODING_XOR_PARITY are all XOR-linear AND systematic
   (D_old readable from a single projection).
@@ -239,14 +226,14 @@ the following hold, as determined by registry lookup against the
 chunk's governing layout:
 
 - The layout's declared encoding (see the base specification's
-  `ffv2_coding_type4` and the encoding registry defined by
-  {{I-D.haynes-nfsv4-flexfiles-v2-encoding-registry}}) has the flag
+  `ffv2_coding_type4` and the FFv2 Erasure Encoding Type Registry in
+  {{I-D.haynes-nfsv4-flexfiles-v2}}) has the flag
   EC_ENC_FLAGS_XOR_DELTA_CAPABLE set ({{sec-iana-encoding-flag}});
   i.e., the encoding is XOR-linear as defined in
   {{sec-terminology}}.
 - The layout's `ffv2m_checksum_algorithm` has the flag
-  CHECKSUM_FLAGS_XOR_AFFINE set in the checksum algorithm
-  registry defined by {{I-D.haynes-nfsv4-flexfiles-v2-chunks}}
+  CHECKSUM_FLAGS_XOR_AFFINE set in the FFv2 Checksum Algorithm
+  Registry defined in {{I-D.haynes-nfsv4-flexfiles-v2}}
   ({{sec-iana-checksum-flag}}).
 
 Capability is thus a derived, static property of the (encoding,
@@ -260,11 +247,12 @@ each operation received (the DS cannot assume clients have honoured
 the SHOULD).
 
 Encodings that register EC_ENC_FLAGS_XOR_DELTA_CAPABLE MUST specify,
-in their own document, the mapping from
+in the document defining the encoding, the mapping from
 `(chunk_offset, byte_offset_within_chunk)` to the projection-local
 offset at which a delta is XORed.  For
-FFV2_ENCODING_MOJETTE_SYSTEMATIC this mapping is defined in
-{{I-D.haynes-nfsv4-flexfiles-v2-mojette}}.  For
+FFV2_ENCODING_MOJETTE_SYSTEMATIC this mapping is defined in the
+Mojette Transform Encoding section of
+{{I-D.haynes-nfsv4-flexfiles-v2}}.  For
 FFV2_ENCODING_XOR_PARITY the mapping is trivial: for the parity
 projection the delta is XORed at the same offset as it appears in
 the source chunk.  For FFV2_ENCODING_MIRRORED the mapping is also
@@ -286,7 +274,7 @@ extension is out of scope here.
 ## OPERATION NUMBER AND DISPATCH
 
 Following the pattern in
-{{I-D.haynes-nfsv4-flexfiles-v2-chunks}} for CHUNK_*
+{{I-D.haynes-nfsv4-flexfiles-v2}} for CHUNK_*
 operations, this document allocates operation number 100 and adds
 corresponding arms to the argument and result unions.  All XDR
 definitions in this document use the language of {{RFC4506}}.  The
@@ -464,7 +452,7 @@ partial application is visible via CHUNK_READ; see
 
 Each chunk carries an envelope that includes a checksum computed
 over the sequence `chunk_header || chunk_data`, as defined in
-{{I-D.haynes-nfsv4-flexfiles-v2-chunks}}.  A delta write modifies
+{{I-D.haynes-nfsv4-flexfiles-v2}}.  A delta write modifies
 both parts of that sequence:
 
 - The chunk_data portion changes by the applied delta (byte-range
@@ -474,7 +462,7 @@ both parts of that sequence:
   header fields.
 
 The checksum algorithm registry defined by
-{{I-D.haynes-nfsv4-flexfiles-v2-chunks}} MUST be extended with a
+{{I-D.haynes-nfsv4-flexfiles-v2}} MUST be extended with a
 boolean capability flag CHECKSUM_FLAGS_XOR_AFFINE
 ({{sec-iana-checksum-flag}}).  CHECKSUM_ALG_CRC32 and
 CHECKSUM_ALG_CRC32C set this flag; CHECKSUM_ALG_FLETCHER4 and the
@@ -514,7 +502,7 @@ silently yields the wrong value.
 
 At CHUNK_FINALIZE time the DS MUST include the newly computed
 envelope checksum in its response, in the same field
-{{I-D.haynes-nfsv4-flexfiles-v2-chunks}} uses for CHUNK_WRITE-driven
+{{I-D.haynes-nfsv4-flexfiles-v2}} uses for CHUNK_WRITE-driven
 finalization.  A client that participated in the epoch SHOULD verify
 this against its own predicted post-delta checksum computed from
 D_old and the delta sequence (using the same affine identity
@@ -585,7 +573,7 @@ abort, the log is discarded immediately after the DS has XORed every
 log entry back into the chunk (undo).
 
 The chunk-generation retention rule defined in
-{{I-D.haynes-nfsv4-flexfiles-v2-chunks}} -- that a DS retains the
+{{I-D.haynes-nfsv4-flexfiles-v2}} -- that a DS retains the
 last COMMITTED generation of each chunk until superseded by a newer
 COMMIT -- applies unchanged.  The delta log is auxiliary state that
 lives alongside the PENDING/FINALIZED generation being built up, not
@@ -650,7 +638,8 @@ served as a retransmit, not rejected with NFS4ERR_CHUNK_GUARDED.
 
 # Interaction with the Chunk State Machine {#sec-state-machine}
 
-{{I-D.haynes-nfsv4-flexfiles-v2-chunks}} defines the chunk state
+The Chunk State Machine section of
+{{I-D.haynes-nfsv4-flexfiles-v2}} defines the chunk state
 machine with three main states -- PENDING, FINALIZED, COMMITTED --
 and the operations that transition between them.  This document adds
 no new states and no new transitions.  It defines CHUNK_XOR_DELTA as
@@ -659,7 +648,7 @@ CHUNK_WRITE_REPAIR.
 
 ## Visibility Rules
 
-The rule from {{I-D.haynes-nfsv4-flexfiles-v2-chunks}} that
+The rule from {{I-D.haynes-nfsv4-flexfiles-v2}} that
 CHUNK_READ serves the most recent COMMITTED generation applies
 without modification.  In particular:
 
@@ -667,7 +656,7 @@ without modification.  In particular:
   until the epoch has been closed by CHUNK_FINALIZE + CHUNK_COMMIT.
 - During an open epoch the DS retains the prior COMMITTED chunk
   contents (already required by
-  {{I-D.haynes-nfsv4-flexfiles-v2-chunks}} for concurrent-reader
+  {{I-D.haynes-nfsv4-flexfiles-v2}} for concurrent-reader
   consistency).  CHUNK_READ served from that state is unchanged by
   any number of applied deltas.
 
@@ -691,7 +680,7 @@ open delta epoch, the DS MUST:
 ### Gap Recovery on NFS4ERR_DELTA_INCOMPLETE {#sec-gap-recovery}
 
 The CHUNK_FINALIZE result union defined in
-{{I-D.haynes-nfsv4-flexfiles-v2-chunks}} does not carry a
+{{I-D.haynes-nfsv4-flexfiles-v2}} does not carry a
 missing-seq array on error return, so the client cannot directly
 enumerate which sequence numbers the DS is missing.  Until a
 future revision of the CHUNK_FINALIZE result union provides such
@@ -718,7 +707,7 @@ divided by the mean delta size (typically low hundreds of
 entries).
 
 The CHUNK_COMMIT semantics of
-{{I-D.haynes-nfsv4-flexfiles-v2-chunks}} apply unchanged: the
+{{I-D.haynes-nfsv4-flexfiles-v2}} apply unchanged: the
 FINALIZED generation becomes COMMITTED atomically.
 
 ## CHUNK_ROLLBACK Semantics for a Delta Epoch
@@ -731,7 +720,7 @@ the chunk_guard4 CAS state returns to what it was at EPOCH_OPEN.
 # Repair-Path Interaction {#sec-repair}
 
 The repair protocol defined in
-{{I-D.haynes-nfsv4-flexfiles-v2-chunks}} coordinates reconstruction
+{{I-D.haynes-nfsv4-flexfiles-v2}} coordinates reconstruction
 of missing or damaged chunks from surviving projections.  This
 document adds one new rule for the repair coordinator:
 
@@ -744,13 +733,14 @@ document adds one new rule for the repair coordinator:
   CHUNK_ROLLBACK) before beginning reconstruction.
 - If the epoch's owner lease has expired, OR the epoch's owning
   stateid has been revoked (per
-  {{I-D.haynes-nfsv4-flexfiles-v2-trust-stateid}}), the repair
+  {{I-D.haynes-nfsv4-flexfiles-v2}}), the repair
   coordinator MUST drive CHUNK_ROLLBACK on each participating DS
   (using the CAS guard from the epoch's OPEN record) and then
   proceed with base-specification repair semantics on the resulting
   pre-epoch generation.  Both triggers are wall-clock bounded --
   lease-expiry by the server's lease-time attribute and stateid
-  revocation by the trust-stateid revocation paths -- so repair
+  revocation by the base specification's stateid-revocation paths
+  -- so repair
   cannot stall indefinitely on a wedged writer.
 
 Rationale: if the epoch has partially applied to some but not all
@@ -760,7 +750,7 @@ applied.  Waiting for epoch closure (or explicitly rolling it back)
 prevents this laundering path.
 
 Steady-state repair -- against chunks with no open delta epoch --
-is unchanged from {{I-D.haynes-nfsv4-flexfiles-v2-chunks}}.  The
+is unchanged from {{I-D.haynes-nfsv4-flexfiles-v2}}.  The
 delta-log retention rule guarantees that at any moment either the
 pre-epoch generation is intact on every participating DS (open
 epoch case) or a common COMMITTED generation is present on the
@@ -770,7 +760,7 @@ surviving DSes (steady-state case).
 
 CB_LAYOUTRECALL is defined in {{RFC5661}}; the stateid-revocation
 paths (TRUST_STATEID, REVOKE_STATEID, BULK_REVOKE_STATEID) are
-defined in {{I-D.haynes-nfsv4-flexfiles-v2-trust-stateid}}.  A delta
+defined in {{I-D.haynes-nfsv4-flexfiles-v2}}.  A delta
 epoch is bound to the client's active layout and stateid; when either
 is revoked mid-epoch, the DS MUST:
 
@@ -786,11 +776,11 @@ against the affected file has been rolled back and MUST NOT issue
 CHUNK_XOR_DELTA against that stateid.  The client MAY reissue the
 edit sequence as CHUNK_WRITE operations under a fresh layout and
 stateid; the write-retry semantics of
-{{I-D.haynes-nfsv4-flexfiles-v2-chunks}} apply.
+{{I-D.haynes-nfsv4-flexfiles-v2}} apply.
 
 This resolves the "layout recalled mid-delta" failure mode without
 introducing a new commit protocol: the revocation paths of {{RFC5661}}
-and {{I-D.haynes-nfsv4-flexfiles-v2-trust-stateid}} already tear
+and {{I-D.haynes-nfsv4-flexfiles-v2}} already tear
 down the client's authority to write, and the DS's duty on
 revocation is to preserve the last-committed state -- which is
 exactly what pre-epoch rollback delivers.
@@ -911,20 +901,18 @@ the capability conjunction structurally excludes them.
 # IANA Considerations {#sec-iana}
 
 Following the pattern established by the FFv2 family
-({{I-D.haynes-nfsv4-flexfiles-v2-chunks}}) that operation numbers
+({{I-D.haynes-nfsv4-flexfiles-v2}}) that operation numbers
 in the NFSv4.2 opnum space are assigned by publication of the
 specifying document, operation number 100 is assigned to
 CHUNK_XOR_DELTA by publication of this document.  No IANA action
 is requested for the operation number.  The current family-wide
 NFSv4.2 opcode allocation, of which 100 is the next available
-value, is:
+value, is (78-95 being defined in
+{{I-D.haynes-nfsv4-flexfiles-v2}}):
 
 - 78-88: CHUNK_COMMIT through CHUNK_WRITE_REPAIR
-  ({{I-D.haynes-nfsv4-flexfiles-v2-chunks}})
 - 89-91: TRUST_STATEID, REVOKE_STATEID, BULK_REVOKE_STATEID
-  ({{I-D.haynes-nfsv4-flexfiles-v2-trust-stateid}})
 - 92-95: CHUNK_ESCROW_INSTALL through CHUNK_ESCROW_TAKEOVER
-  ({{I-D.haynes-nfsv4-flexfiles-v2-chunks}})
 - 96-99: PROXY_REGISTRATION through PROXY_CANCEL (proxy-server
   document, `draft-haynes-nfsv4-flexfiles-v2-proxy-server`)
 - 100:   CHUNK_XOR_DELTA (this document)
@@ -939,7 +927,7 @@ This document requests the following IANA actions:
 
 Add a new column named "XOR-Delta-Capable" (boolean) to the
 "Flexible File Version 2 Layout Type Erasure Coding Type Registry"
-defined in {{I-D.haynes-nfsv4-flexfiles-v2-encoding-registry}}.
+defined in {{I-D.haynes-nfsv4-flexfiles-v2}}.
 The column is called EC_ENC_FLAGS_XOR_DELTA_CAPABLE in prose
 references.
 
@@ -973,7 +961,7 @@ Initial assignments:
 
 Add a new column named "XOR-Affine" (boolean) to the
 "Flexible File Version 2 Layout Type Checksum Algorithm Registry"
-defined in {{I-D.haynes-nfsv4-flexfiles-v2-chunks}}.  The column is
+defined in {{I-D.haynes-nfsv4-flexfiles-v2}}.  The column is
 called CHECKSUM_FLAGS_XOR_AFFINE in prose references.
 
 Set for algorithms that satisfy the XOR-affine identity defined
@@ -1006,7 +994,7 @@ correct answer for every entry, including CHECKSUM_ALG_NONE
 ## New Error Codes
 
 Following the pattern established by
-{{I-D.haynes-nfsv4-flexfiles-v2-chunks}} that nfsstat4 codes
+{{I-D.haynes-nfsv4-flexfiles-v2}} that nfsstat4 codes
 scoped to the FFv2 protocol family are assigned by publication of
 the specifying document (no IANA nfsstat4 registry exists), this
 document assigns:
@@ -1019,7 +1007,7 @@ document assigns:
   the current epoch and open a new one.
 
 No IANA action is requested for these codes.  The values 10110 and
-10111 are chosen to sit above the chunks draft's cluster (10100 =
+10111 are chosen to sit above the base specification's cluster (10100 =
 NFS4ERR_CHUNK_GUARDED and neighbours) with a gap for future
 CHUNK_* codes.
 
@@ -1055,7 +1043,7 @@ a canonical HPC checkpoint workload.
   every 10 seconds, distributed across its 1 GiB region as 256
   independent 4 KiB writes
 - Ranks are block-aligned per the HPC guidance in
-  {{I-D.haynes-nfsv4-flexfiles-v2-requirements}}; no two ranks write
+  {{I-D.haynes-nfsv4-flexfiles-v2}}; no two ranks write
   into the same 2 MiB stripe within a single checkpoint interval
 - CHECKSUM_ALG_CRC32C checksums (XOR-affine)
 - Twelve data servers, one per projection
@@ -1116,7 +1104,7 @@ For each 4 KiB write the client:
    with the 4 KiB delta payload each
 4. Also issues CHUNK_XOR_DELTA against the data DS i for its own
    byte-range change.  (The base CHUNK_WRITE path in
-   {{I-D.haynes-nfsv4-flexfiles-v2-chunks}} is a
+   {{I-D.haynes-nfsv4-flexfiles-v2}} is a
    whole-chunk-generation producer and does not have a small-write
    fast path; for delta-eligible encodings this document's
    CHUNK_XOR_DELTA is what the client uses to update the data
@@ -1138,7 +1126,7 @@ per-parity-DS RPC setup.  No Mojette re-encode.
 
 ## Cost Comparison
 
-Path A = CHUNK_WRITE (from {{I-D.haynes-nfsv4-flexfiles-v2-chunks}});
+Path A = CHUNK_WRITE (from {{I-D.haynes-nfsv4-flexfiles-v2}});
 Path B = CHUNK_XOR_DELTA (this document).
 
 | Metric                        |    Path A |    Path B |  Ratio |
