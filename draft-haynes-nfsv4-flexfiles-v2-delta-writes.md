@@ -919,21 +919,13 @@ Following the pattern established by the flexible file v2 layout family
 in the NFSv4.2 opnum space are assigned by publication of the
 specifying document, operation number 100 is assigned to
 CHUNK_XOR_DELTA by publication of this document.  No IANA action
-is requested for the operation number.  The current family-wide
-NFSv4.2 opcode allocation, of which 100 is the next available
-value, is (78-95 being defined in
-{{I-D.haynes-nfsv4-flexfiles-v2}}):
-
-- 78-88: CHUNK_COMMIT through CHUNK_WRITE_REPAIR
-- 89-91: TRUST_STATEID, REVOKE_STATEID, BULK_REVOKE_STATEID
-- 92-95: CHUNK_ESCROW_INSTALL through CHUNK_ESCROW_TAKEOVER
-- 96-99: PROXY_REGISTRATION through PROXY_CANCEL (proxy-server
-  document, `draft-haynes-nfsv4-flexfiles-v2-proxy-server`)
-- 100:   CHUNK_XOR_DELTA (this document)
+is requested for the operation number.  100 was the next value
+available above the range {{I-D.haynes-nfsv4-flexfiles-v2}} and the
+proxy server document allocate.
 
 Opcode values MUST NOT overlap across family documents; a future
-extension MUST take the next available value at or above 101, and
-MUST NOT re-use any value the family has already allocated.
+extension MUST take the next available value, and MUST NOT re-use any
+value the family has already allocated.
 
 This document requests the following IANA actions:
 
