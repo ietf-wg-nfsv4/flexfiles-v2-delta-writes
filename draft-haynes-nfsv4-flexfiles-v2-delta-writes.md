@@ -328,7 +328,7 @@ definitions in this document use the language of {{RFC4506}}.
    ///     chunk_guard4              cxda_guard;
    ///     chunk_guard4              cxda_predecessor_guard;
    ///     chunk_xor_delta_entry4
-   ///                        cxda_deltas<CHUNK_XOR_DELTA_MAX_ENTRIES>;
+   ///         cxda_deltas<CHUNK_XOR_DELTA_MAX_ENTRIES>;
    /// };
 ~~~
 {: #fig-CHUNK_XOR_DELTA4args title="XDR for CHUNK_XOR_DELTA4args" }
