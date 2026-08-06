@@ -1085,14 +1085,14 @@ CHUNK_WRITE; the seven unaffected data servers are untouched.
 
 For each 4 KiB write the client MUST:
 
-1. Read the affected data shard from data server i (256 KiB in, if not
-   cached)
-2. Compute the new data shard (256 KiB output)
-3. Re-encode all 4 parity projections (256 KiB each x 4 = 1 MiB
-   output)
-4. Transmit the new data shard + 4 new parity projections =
-   5 x 256 KiB = 1.25 MiB out, across 5 CHUNK_WRITE requests
-5. Await 5 CHUNK_WRITE responses
+1. read the affected data shard from data server i (256 KiB in, if not
+   cached);
+2. compute the new data shard (256 KiB output);
+3. re-encode all 4 parity projections (256 KiB each x 4 = 1 MiB
+   output);
+4. transmit the new data shard + 4 new parity projections =
+   5 x 256 KiB = 1.25 MiB out, across 5 CHUNK_WRITE requests; and
+5. await 5 CHUNK_WRITE responses.
 
 Per-rank per-write wire cost (Path A, warm-cache case where the
 client already has D_old):
@@ -1117,20 +1117,21 @@ overheads.
 
 For each 4 KiB write the client:
 
-1. Reads the current 4 KiB of the affected data shard (from data
-   data server i) if not cached -- 4 KiB in
-2. XORs old with new to produce a 4 KiB delta
-3. Sends CHUNK_XOR_DELTA(EPOCH_OPEN + entry) to the 4 parity data
-   servers with the 4 KiB delta payload each
-4. Also issues CHUNK_XOR_DELTA against the data server i for its own
-   byte-range change.  (The base CHUNK_WRITE path in
-   {{I-D.haynes-nfsv4-flexfiles-v2}} is a
-   whole-chunk-generation producer and does not have a small-write
-   fast path; for delta-eligible encodings this document's
-   CHUNK_XOR_DELTA is what the client uses to update the data
-   shard alongside the parity shards.)
-5. At end of checkpoint interval, issues CHUNK_FINALIZE +
-   CHUNK_COMMIT on every affected chunk
+1. reads the current 4 KiB of the affected data shard (from data
+   server i) if not cached -- 4 KiB in;
+2. XORs old with new to produce a 4 KiB delta;
+3. sends CHUNK_XOR_DELTA(EPOCH_OPEN + entry) to the 4 parity data
+   servers with the 4 KiB delta payload each;
+4. also issues CHUNK_XOR_DELTA against data server i for its own
+   byte-range change; and
+5. at end of checkpoint interval, issues CHUNK_FINALIZE +
+   CHUNK_COMMIT on every affected chunk.
+
+Step 4 is needed because the base CHUNK_WRITE path in
+{{I-D.haynes-nfsv4-flexfiles-v2}} is a whole-chunk-generation
+producer with no small-write fast path.  For delta-eligible
+encodings, CHUNK_XOR_DELTA is what the client uses to update the
+data shard alongside the parity shards.
 
 Per-rank per-write wire cost (Path B):
 
