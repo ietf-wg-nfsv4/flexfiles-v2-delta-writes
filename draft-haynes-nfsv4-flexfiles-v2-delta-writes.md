@@ -681,12 +681,14 @@ open delta epoch, the data server MUST:
 
 ### Gap Recovery on NFS4ERR_DELTA_INCOMPLETE {#sec-gap-recovery}
 
-The CHUNK_FINALIZE result union defined in
-{{I-D.haynes-nfsv4-flexfiles-v2}} does not carry a
-missing-seq array on error return, so the client cannot directly
-enumerate which sequence numbers the data server is missing.  Until a
-future revision of the CHUNK_FINALIZE result union provides such
-enumeration, the client MUST implement gap recovery as follows:
+NFS4ERR_DELTA_INCOMPLETE reports that a gap exists, not which
+sequence numbers are missing: the CHUNK_FINALIZE result union defined
+in {{I-D.haynes-nfsv4-flexfiles-v2}} carries no missing-seq array, and
+this document does not add one.  Recovery is driven from the client's
+own record instead, which is sufficient because the set of deltas the
+client has issued without a success response is a superset of the set
+the data server is missing.  The client MUST implement gap recovery as
+follows:
 
 1. The client MUST retain a per-epoch "outstanding" set: every
    `(cxda_guard, cxde_seq)` for which it has issued
@@ -702,11 +704,22 @@ enumeration, the client MUST implement gap recovery as follows:
    and restart the edit sequence as CHUNK_WRITE operations under
    a fresh epoch (the epoch is unrecoverable).
 
-This is O(outstanding-set-size) worst-case wire traffic for gap
-recovery, versus O(1) for an enumerated missing-seq array.  In
-practice the outstanding set is bounded by the delta-log capacity
-divided by the mean delta size (typically low hundreds of
-entries).
+Replay converges on the same state that an enumerated missing-seq
+array would reach.  A delta that never arrived is filled by the
+replay; one that arrived but whose response was lost is deduplicated
+per {{sec-retransmit}} and not applied twice.  A delta the client saw
+acknowledged but the data server no longer holds is in neither set,
+and is why step 3 ends in CHUNK_ROLLBACK: no enumeration recovers a
+discarded log.
+
+The cost of driving recovery this way is O(outstanding-set-size)
+worst-case wire traffic, against O(1) for an enumerated array, on a
+path taken only after loss.  In practice the outstanding set is
+bounded by the delta-log capacity divided by the mean delta size,
+typically low hundreds of entries.  Carrying the array would put
+delta-epoch state in a result union returned by every CHUNK_FINALIZE,
+including the ones that finalize ordinary CHUNK_WRITE generations, so
+this document leaves the base specification's commit path untouched.
 
 The CHUNK_COMMIT semantics of
 {{I-D.haynes-nfsv4-flexfiles-v2}} apply unchanged: the
