@@ -1002,14 +1002,29 @@ correct answer for every entry, including CHECKSUM_ALG_NONE
 Following the pattern established by {{I-D.haynes-nfsv4-flexfiles-v2}}
 that nfsstat4 codes scoped to the flexible file v2 layout protocol
 family are assigned by publication of the specifying document (no IANA
-nfsstat4 registry exists), this document assigns:
+nfsstat4 registry exists), this document assigns the codes in
+{{fig-delta-errors-xdr}}.
 
-- NFS4ERR_DELTA_INCOMPLETE = 10110: returned by CHUNK_FINALIZE when
-  the recorded delta-log sequence numbers do not form a contiguous
-  range from 1 to N.
-- NFS4ERR_DELTA_LOG_FULL = 10111: returned by CHUNK_XOR_DELTA when
-  the per-chunk delta log would overflow.  The client SHOULD close
-  the current epoch and open a new one.
+~~~ xdr
+   ///
+   /// /* Delta-write error constants; added to nfsstat4 enum */
+   ///
+   /// const NFS4ERR_DELTA_INCOMPLETE = 10110;
+   /// const NFS4ERR_DELTA_LOG_FULL   = 10111;
+   ///
+~~~
+{: #fig-delta-errors-xdr title="XDR for the delta-write error codes" }
+
+NFS4ERR_DELTA_INCOMPLETE:
+
+: returned by CHUNK_FINALIZE when the recorded delta-log sequence
+  numbers do not form a contiguous range from 1 to N.
+
+NFS4ERR_DELTA_LOG_FULL:
+
+: returned by CHUNK_XOR_DELTA when the per-chunk delta log would
+  overflow.  The client SHOULD close the current epoch and open a new
+  one.
 
 No IANA action is requested for these codes.  The values 10110 and
 10111 are chosen to sit above the base specification's cluster (10100 =
