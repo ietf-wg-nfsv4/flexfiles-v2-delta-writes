@@ -277,12 +277,7 @@ Following the pattern in
 {{I-D.haynes-nfsv4-flexfiles-v2}} for CHUNK operations, this
 document allocates operation number 100 and adds
 corresponding arms to the argument and result unions.  All XDR
-definitions in this document use the language of {{RFC4506}}.  The
-allocation is coordinated with the rest of the flexfiles-v2
-family: main draft holds 78-95 (CHUNK operations plus the TRUST/REVOKE
-family plus CHUNK_ESCROW operations), the proxy-server draft holds 96-99
-(PROXY_REGISTRATION through PROXY_CANCEL); this document takes
-100 as the next available NFSv4.2 opcode.
+definitions in this document use the language of {{RFC4506}}.
 
 ~~~ xdr
    /// const OP_CHUNK_XOR_DELTA = 100;
