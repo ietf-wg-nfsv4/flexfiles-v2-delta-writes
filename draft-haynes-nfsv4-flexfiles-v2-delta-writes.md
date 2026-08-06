@@ -448,7 +448,7 @@ partial application is visible via CHUNK_READ; see
 # Checksum-Homomorphism and Envelope Handling {#sec-checksum}
 
 Each chunk carries an envelope that includes a checksum computed
-over the sequence `chunk_header || chunk_data`, as defined in
+over the chunk header followed by the chunk data, as defined in
 {{I-D.haynes-nfsv4-flexfiles-v2}}.  A delta write modifies
 both parts of that sequence:
 
@@ -471,10 +471,10 @@ is responsible for computing the new envelope checksum.  For an
 XOR-affine checksum (see the terminology definition in
 {{sec-terminology}} for the exact identity), the data server MAY
 compute the new checksum incrementally.  Let L be the length of the
-covered envelope (chunk_header || chunk_data), let X be the pre-delta
-envelope contents, and let Y be the post-delta envelope contents
-zero-extended to length L in the same layout.  The affine identity
-gives:
+covered envelope (the chunk header followed by the chunk data), let
+X be the pre-delta envelope contents, and let Y be the post-delta
+envelope contents zero-extended to length L in the same layout.
+The affine identity gives:
 
     f(Y) = f(X) XOR f(X XOR Y) XOR f(0^L)
 
