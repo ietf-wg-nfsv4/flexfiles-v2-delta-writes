@@ -89,7 +89,9 @@ write disjoint regions of the same file in lockstep.  For a 16-byte
 edit inside a 256 KiB stripe, the base CHUNK_WRITE path costs
 approximately 256 KiB of stripe fetch plus 384 KiB of
 new-stripe-plus-parity transmit per writer per checkpoint interval
--- an amplification of roughly 4x10^4 over the logical edited bytes.
+-- an amplification of roughly 4x10^4 over the logical edited bytes
+for that configuration.  Figures throughout this document are
+illustrative of the workloads described, not performance guarantees.
 
 When the erasure encoding is XOR-based, this amplification is
 avoidable.  If the client can compute the delta
@@ -130,6 +132,19 @@ registry flags are set the client MAY issue CHUNK_XOR_DELTA against
 that layout; when either is clear it MUST NOT.  No new field is
 added to `ffv2_mirror4`; capability is fully derivable from fields
 already present.
+
+A flag the client cannot read is clear.  This covers a registry copy
+predating the columns this document adds
+({{sec-iana-encoding-flag}}, {{sec-iana-checksum-flag}}), an encoding
+or checksum value the client does not recognize, and a registry the
+client cannot consult at all.  Capability MUST NOT be inferred from
+the encoding's name, from the layout alone, or from the fact that a
+server advertises an encoding this document discusses; a client that
+cannot read both flags uses CHUNK_WRITE.  The two registries are
+established by {{I-D.haynes-nfsv4-flexfiles-v2}} and extended here, so
+a client MAY hold a registry snapshot older than this document -- the
+fail-closed rule above is what makes that safe, and no synchronized
+release of the two documents is required for correctness.
 
 ## Requirements Language
 
@@ -1146,6 +1161,12 @@ Per-write client compute: one XOR of 4 KiB (nanoseconds), plus
 per-parity-data-server RPC setup.  No Mojette re-encode.
 
 ## Cost Comparison
+
+The figures in this section are illustrations for one configuration --
+the checkpoint workload of {{sec-example-hpc}} at the stripe and edit
+sizes stated there -- and not protocol guarantees.  They vary with
+workload, encoding parameters, chunk size, and fabric topology, and
+the assumptions they rest on are listed after the table.
 
 Path A = CHUNK_WRITE (from {{I-D.haynes-nfsv4-flexfiles-v2}});
 Path B = CHUNK_XOR_DELTA (this document).
