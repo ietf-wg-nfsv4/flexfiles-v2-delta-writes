@@ -38,14 +38,17 @@ informative:
     title: "The Mojette Transform: Application to Image Coding"
     author:
       - name: J-P. Guédon
+        asciiFullname: J-P. Guedon
+        asciiSurname: Guedon
+        asciiInitials: J-P.
       - name: N. Normand
     date: 1995
 
 --- abstract
 
-The Flexible File Version 2 pNFS layout type
-{{I-D.haynes-nfsv4-flexfiles-v2}} defines a chunk-oriented
-data-server protocol in which every write is a full-chunk payload.
+The Flexible File Version 2 pNFS layout type defines a
+chunk-oriented data-server protocol in which every write is a
+full-chunk payload.
 For workloads that make small edits to files protected by an
 XOR-based erasure encoding, this forces client-side stripe fetch,
 re-encode, and transmit on every edit, with wire amplification of
