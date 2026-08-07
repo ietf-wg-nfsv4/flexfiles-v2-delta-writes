@@ -4,8 +4,8 @@
 
 Network File System Version 4                                  T. Haynes
 Internet-Draft                                               Hammerspace
-Intended status: Standards Track                           6 August 2026
-Expires: 7 February 2027
+Intended status: Standards Track                           7 August 2026
+Expires: 8 February 2027
 
 
    Delta-Write Extension for the Flexible File Version 2 Layout Type
@@ -60,7 +60,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 7 February 2027.
+   This Internet-Draft will expire on 8 February 2027.
 
 Copyright Notice
 
@@ -163,7 +163,9 @@ Table of Contents
    256 KiB stripe, the base CHUNK_WRITE path costs approximately 256 KiB
    of stripe fetch plus 384 KiB of new-stripe-plus-parity transmit per
    writer per checkpoint interval -- an amplification of roughly 4x10^4
-   over the logical edited bytes.
+   over the logical edited bytes for that configuration.  Figures
+   throughout this document are illustrative of the workloads described,
+   not performance guarantees.
 
    When the erasure encoding is XOR-based, this amplification is
    avoidable.  If the client can compute the delta
@@ -204,6 +206,19 @@ Table of Contents
    the client MAY issue CHUNK_XOR_DELTA against that layout; when either
    is clear it MUST NOT.  No new field is added to ffv2_mirror4;
    capability is fully derivable from fields already present.
+
+   A flag the client cannot read is clear.  This covers a registry copy
+   predating the columns this document adds (Section 12.1,
+   Section 12.2), an encoding or checksum value the client does not
+   recognize, and a registry the client cannot consult at all.
+   Capability MUST NOT be inferred from the encoding's name, from the
+   layout alone, or from the fact that a server advertises an encoding
+   this document discusses; a client that cannot read both flags uses
+   CHUNK_WRITE.  The two registries are established by
+   [I-D.haynes-nfsv4-flexfiles-v2] and extended here, so a client MAY
+   hold a registry snapshot older than this document -- the fail-closed
+   rule above is what makes that safe, and no synchronized release of
+   the two documents is required for correctness.
 
 1.1.  Requirements Language
 
@@ -1277,6 +1292,12 @@ A.3.  Path B: CHUNK_XOR_DELTA
    parity-data-server RPC setup.  No Mojette re-encode.
 
 A.4.  Cost Comparison
+
+   The figures in this section are illustrations for one configuration
+   -- the checkpoint workload of Appendix A at the stripe and edit sizes
+   stated there -- and not protocol guarantees.  They vary with
+   workload, encoding parameters, chunk size, and fabric topology, and
+   the assumptions they rest on are listed after the table.
 
    Path A = CHUNK_WRITE (from [I-D.haynes-nfsv4-flexfiles-v2]); Path B =
    CHUNK_XOR_DELTA (this document).

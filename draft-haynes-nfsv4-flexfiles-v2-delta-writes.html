@@ -1062,7 +1062,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Haynes</td>
-<td class="center">Expires 7 February 2027</td>
+<td class="center">Expires 8 February 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1075,12 +1075,12 @@ svg {
 <dd class="internet-draft">draft-haynes-nfsv4-flexfiles-v2-delta-writes-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-08-06" class="published">6 August 2026</time>
+<time datetime="2026-08-07" class="published">7 August 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-02-07">7 February 2027</time></dd>
+<dd class="expires"><time datetime="2027-02-08">8 February 2027</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1142,7 +1142,7 @@ the existing chunk state machine with no new commit protocol.<a href="#section-a
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 7 February 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 8 February 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1383,7 +1383,9 @@ write disjoint regions of the same file in lockstep.  For a 16-byte
 edit inside a 256 KiB stripe, the base CHUNK_WRITE path costs
 approximately 256 KiB of stripe fetch plus 384 KiB of
 new-stripe-plus-parity transmit per writer per checkpoint interval
--- an amplification of roughly 4x10^4 over the logical edited bytes.<a href="#section-1-4" class="pilcrow">¶</a></p>
+-- an amplification of roughly 4x10^4 over the logical edited bytes
+for that configuration.  Figures throughout this document are
+illustrative of the workloads described, not performance guarantees.<a href="#section-1-4" class="pilcrow">¶</a></p>
 <p id="section-1-5">When the erasure encoding is XOR-based, this amplification is
 avoidable.  If the client can compute the delta<a href="#section-1-5" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-1-6">
@@ -1428,6 +1430,18 @@ registry flags are set the client <span class="bcp14">MAY</span> issue CHUNK_XOR
 that layout; when either is clear it <span class="bcp14">MUST NOT</span>.  No new field is
 added to <code>ffv2_mirror4</code>; capability is fully derivable from fields
 already present.<a href="#section-1-10" class="pilcrow">¶</a></p>
+<p id="section-1-11">A flag the client cannot read is clear.  This covers a registry copy
+predating the columns this document adds
+(<a href="#sec-iana-encoding-flag" class="auto internal xref">Section 12.1</a>, <a href="#sec-iana-checksum-flag" class="auto internal xref">Section 12.2</a>), an encoding
+or checksum value the client does not recognize, and a registry the
+client cannot consult at all.  Capability <span class="bcp14">MUST NOT</span> be inferred from
+the encoding's name, from the layout alone, or from the fact that a
+server advertises an encoding this document discusses; a client that
+cannot read both flags uses CHUNK_WRITE.  The two registries are
+established by <span>[<a href="#I-D.haynes-nfsv4-flexfiles-v2" class="cite xref">I-D.haynes-nfsv4-flexfiles-v2</a>]</span> and extended here, so
+a client <span class="bcp14">MAY</span> hold a registry snapshot older than this document -- the
+fail-closed rule above is what makes that safe, and no synchronized
+release of the two documents is required for correctness.<a href="#section-1-11" class="pilcrow">¶</a></p>
 <div id="requirements-language">
 <section id="section-1.1">
         <h3 id="name-requirements-language">
@@ -2867,8 +2881,13 @@ per-parity-data-server RPC setup.  No Mojette re-encode.<a href="#appendix-A.3-6
         <h3 id="name-cost-comparison">
 <a href="#appendix-A.4" class="section-number selfRef">A.4. </a><a href="#name-cost-comparison" class="section-name selfRef">Cost Comparison</a>
         </h3>
-<p id="appendix-A.4-1">Path A = CHUNK_WRITE (from <span>[<a href="#I-D.haynes-nfsv4-flexfiles-v2" class="cite xref">I-D.haynes-nfsv4-flexfiles-v2</a>]</span>);
-Path B = CHUNK_XOR_DELTA (this document).<a href="#appendix-A.4-1" class="pilcrow">¶</a></p>
+<p id="appendix-A.4-1">The figures in this section are illustrations for one configuration --
+the checkpoint workload of <a href="#sec-example-hpc" class="auto internal xref">Appendix A</a> at the stripe and edit
+sizes stated there -- and not protocol guarantees.  They vary with
+workload, encoding parameters, chunk size, and fabric topology, and
+the assumptions they rest on are listed after the table.<a href="#appendix-A.4-1" class="pilcrow">¶</a></p>
+<p id="appendix-A.4-2">Path A = CHUNK_WRITE (from <span>[<a href="#I-D.haynes-nfsv4-flexfiles-v2" class="cite xref">I-D.haynes-nfsv4-flexfiles-v2</a>]</span>);
+Path B = CHUNK_XOR_DELTA (this document).<a href="#appendix-A.4-2" class="pilcrow">¶</a></p>
 <table class="center" id="table-1">
           <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
 <thead>
@@ -2912,13 +2931,13 @@ Path B = CHUNK_XOR_DELTA (this document).<a href="#appendix-A.4-1" class="pilcro
             </tr>
           </tbody>
         </table>
-<p id="appendix-A.4-3">The dominant effect is aggregate wire traffic against fabric
+<p id="appendix-A.4-4">The dominant effect is aggregate wire traffic against fabric
 capacity.  Per-rank per-interval Path A is 320 MiB; on a
 dedicated 10 Gbps NIC (~1.19 GiB/s) this is a lower bound of
 ~0.26 s of wire transmission per rank, well within the 10-second
 checkpoint interval considered in isolation.  The problem is not
-per-rank wall clock; it is aggregate contention.<a href="#appendix-A.4-3" class="pilcrow">¶</a></p>
-<p id="appendix-A.4-4">Aggregate across 1 000 ranks per interval: Path A is 312.5 GiB. On a
+per-rank wall clock; it is aggregate contention.<a href="#appendix-A.4-4" class="pilcrow">¶</a></p>
+<p id="appendix-A.4-5">Aggregate across 1 000 ranks per interval: Path A is 312.5 GiB. On a
 shared fabric where per-data-server ingress and cross-rank bandwidth
 compete, this saturates commodity checkpoint fabrics -- a 100 GbE core
 (~11.9 GiB/s) needs ~26 s just to drain the write volume, exceeding
@@ -2928,7 +2947,7 @@ on the same fabric, comfortably fitting the interval with headroom for
 reads, callbacks, and interference.  The point of the extension is not
 the per-rank wall clock but the aggregate-fabric budget: delta writes
 convert an at-the-fabric-limit workload into a
-comfortably-under-the-limit workload.<a href="#appendix-A.4-4" class="pilcrow">¶</a></p>
+comfortably-under-the-limit workload.<a href="#appendix-A.4-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="assumptions-and-caveats">
