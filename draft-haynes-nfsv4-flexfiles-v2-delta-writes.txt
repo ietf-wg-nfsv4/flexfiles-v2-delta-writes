@@ -4,8 +4,8 @@
 
 Network File System Version 4                                  T. Haynes
 Internet-Draft                                               Hammerspace
-Intended status: Standards Track                           7 August 2026
-Expires: 8 February 2027
+Intended status: Standards Track                       15 September 2026
+Expires: 19 March 2027
 
 
    Delta-Write Extension for the Flexible File Version 2 Layout Type
@@ -13,14 +13,13 @@ Expires: 8 February 2027
 
 Abstract
 
-   The Flexible File Version 2 pNFS layout type
-   [I-D.haynes-nfsv4-flexfiles-v2] defines a chunk-oriented data-server
-   protocol in which every write is a full-chunk payload.  For workloads
-   that make small edits to files protected by an XOR-based erasure
-   encoding, this forces client-side stripe fetch, re-encode, and
-   transmit on every edit, with wire amplification of three to four
-   orders of magnitude per byte edited.  This document defines an
-   optional extension, CHUNK_XOR_DELTA, that lets a client transmit a
+   The Flexible File Version 2 pNFS layout type defines a chunk-oriented
+   data-server protocol in which every write is a full-chunk payload.
+   For workloads that make small edits to files protected by an XOR-
+   based erasure encoding, this forces client-side stripe fetch, re-
+   encode, and transmit on every edit, with wire amplification of three
+   to four orders of magnitude per byte edited.  This document defines
+   an optional extension, CHUNK_XOR_DELTA, that lets a client transmit a
    per-projection XOR delta directly to each data server holding a
    projection of the affected stripe; the data server applies the delta
    locally.  The extension is restricted to XOR-linear systematic
@@ -60,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 8 February 2027.
+   This Internet-Draft will expire on 19 March 2027.
 
 Copyright Notice
 
@@ -105,22 +104,23 @@ Table of Contents
      8.3.  CHUNK_ROLLBACK Semantics for a Delta Epoch
    9.  Repair-Path Interaction
    10. Layout Revocation and Stateid Semantics
-   11. Security Considerations
-     11.1.  Authorization Equivalence
-     11.2.  Transport Security
-     11.3.  Denial of Service via Open Epochs
-     11.4.  Retransmit Mismatch
-     11.5.  Log-Capacity Disclosure
-     11.6.  Optional Ownership Restriction
-     11.7.  Cryptographic-Checksum Deployments
-   12. IANA Considerations
-     12.1.  Encoding Registry: XOR-Delta-Capable Column
-     12.2.  Checksum Registry: XOR-Affine Column
-     12.3.  New Error Codes
-     12.4.  New Layout Flag
-   13. References
-     13.1.  Normative References
-     13.2.  Informative References
+   11. XDR Description of the CHUNK_XOR_DELTA Operation
+   12. Security Considerations
+     12.1.  Authorization Equivalence
+     12.2.  Transport Security
+     12.3.  Denial of Service via Open Epochs
+     12.4.  Retransmit Mismatch
+     12.5.  Log-Capacity Disclosure
+     12.6.  Optional Ownership Restriction
+     12.7.  Cryptographic-Checksum Deployments
+   13. IANA Considerations
+     13.1.  Encoding Registry: XOR-Delta-Capable Column
+     13.2.  Checksum Registry: XOR-Affine Column
+     13.3.  New Error Codes
+     13.4.  New Layout Flag
+   14. References
+     14.1.  Normative References
+     14.2.  Informative References
    Appendix A.  Worked Example: HPC Checkpoint at 1000 Ranks
      A.1.  Scenario
      A.2.  Path A: Base CHUNK_WRITE
@@ -208,8 +208,8 @@ Table of Contents
    capability is fully derivable from fields already present.
 
    A flag the client cannot read is clear.  This covers a registry copy
-   predating the columns this document adds (Section 12.1,
-   Section 12.2), an encoding or checksum value the client does not
+   predating the columns this document adds (Section 13.1,
+   Section 13.2), an encoding or checksum value the client does not
    recognize, and a registry the client cannot consult at all.
    Capability MUST NOT be inferred from the encoding's name, from the
    layout alone, or from the fact that a server advertises an encoding
@@ -315,12 +315,12 @@ Table of Contents
    *  The layout's declared encoding (see the base specification's
       ffv2_coding_type4 and the Erasure Encoding Type Registry in
       [I-D.haynes-nfsv4-flexfiles-v2]) has the flag
-      EC_ENC_FLAGS_XOR_DELTA_CAPABLE set (Section 12.1); i.e., the
+      EC_ENC_FLAGS_XOR_DELTA_CAPABLE set (Section 13.1); i.e., the
       encoding is XOR-linear as defined in Section 2.
 
    *  The layout's ffv2m_checksum_algorithm has the flag
       CHECKSUM_FLAGS_XOR_AFFINE set in the Checksum Algorithm Registry
-      defined in [I-D.haynes-nfsv4-flexfiles-v2] (Section 12.2).
+      defined in [I-D.haynes-nfsv4-flexfiles-v2] (Section 13.2).
 
    Capability is thus a derived, static property of the (encoding,
    checksum-algorithm) pair the layout already carries; no additional
@@ -539,7 +539,7 @@ Table of Contents
 
    The checksum algorithm registry defined by
    [I-D.haynes-nfsv4-flexfiles-v2] MUST be extended with a boolean
-   capability flag CHECKSUM_FLAGS_XOR_AFFINE (Section 12.2).
+   capability flag CHECKSUM_FLAGS_XOR_AFFINE (Section 13.2).
    CHECKSUM_ALG_CRC32 and CHECKSUM_ALG_CRC32C set this flag;
    CHECKSUM_ALG_FLETCHER4 and the cryptographic-hash algorithms
    (CHECKSUM_ALG_SHA256, CHECKSUM_ALG_SHA512, CHECKSUM_ALG_BLAKE3) do
@@ -889,9 +889,40 @@ Table of Contents
    preserve the last-committed state -- which is exactly what pre-epoch
    rollback delivers.
 
-11.  Security Considerations
+11.  XDR Description of the CHUNK_XOR_DELTA Operation
 
-11.1.  Authorization Equivalence
+   This document contains the External Data Representation (XDR)
+   [RFC4506] description of the CHUNK_XOR_DELTA Operation.  The XDR
+   description is embedded in this document in a way that makes it
+   simple for the reader to extract into a ready-to-compile form.  The
+   reader can feed this document into the shell script in Figure 9,
+   which relies on the sh, grep, and sed utilities as specified by
+   [POSIX], to produce the machine-readable XDR description.
+
+   #!/bin/sh
+   grep '^ *///' $* | sed 's?^ */// ??' | sed 's?^ *///$??'
+
+                            Figure 9: extract.sh
+
+   That is, if the above script is stored in a file called "extract.sh"
+   and this document is in a file called "spec.txt", then the reader can
+   run the script as in Figure 10.
+
+   sh extract.sh < spec.txt > flex_files2_delta_prot.x
+
+                    Figure 10: Example use of extract.sh
+
+   The effect of the script is to remove leading blank space from each
+   line, plus a sentinel sequence of "///".
+
+   The XDR extracted from this document is not self-contained: it amends
+   the XDR of [RFC7863] and [I-D.haynes-nfsv4-flexfiles-v2], and the
+   amendment blocks are to be placed at the extension points those
+   documents define.
+
+12.  Security Considerations
+
+12.1.  Authorization Equivalence
 
    Any principal authorized to issue CHUNK_WRITE against a chunk is, by
    construction, authorized to write any byte sequence into that chunk.
@@ -910,7 +941,7 @@ Table of Contents
    partial application may have occurred; repair either waits for
    closure or explicitly rolls back.
 
-11.2.  Transport Security
+12.2.  Transport Security
 
    CHUNK_XOR_DELTA MUST be issued over a transport that provides
    integrity protection at the RPC layer (for example RPCSEC_GSS with
@@ -923,7 +954,7 @@ Table of Contents
    carries no confidentiality of its own and its integrity is not self-
    authenticating.
 
-11.3.  Denial of Service via Open Epochs
+12.3.  Denial of Service via Open Epochs
 
    Per Section 6 the data server bounds the delta log for each open
    epoch, but the aggregate number of concurrently open epochs held by a
@@ -954,7 +985,7 @@ Table of Contents
    is layout recall or stateid revocation (Section 10), which forces
    data server rollback of all epochs bound to the revoked stateid.
 
-11.4.  Retransmit Mismatch
+12.4.  Retransmit Mismatch
 
    Section 7 specifies that a data server receiving a duplicate cxde_seq
    in the same epoch MUST NOT re-apply the delta and MUST return the
@@ -965,7 +996,7 @@ Table of Contents
    force.  The data server MUST reject such a mismatch with
    NFS4ERR_INVAL and SHOULD log the event for administrative review.
 
-11.5.  Log-Capacity Disclosure
+12.5.  Log-Capacity Disclosure
 
    The response fields cxdr_log_bytes_used and cxdr_log_bytes_available
    disclose the data server's per-chunk delta-log occupancy to the
@@ -975,7 +1006,7 @@ Table of Contents
    authorized to issue CHUNK_XOR_DELTA against the chunk in question; no
    additional confidentiality boundary is crossed.
 
-11.6.  Optional Ownership Restriction
+12.6.  Optional Ownership Restriction
 
    Deployments that wish to further narrow the writer set for a file MAY
    set the layout flag FFV2_FLAGS_DELTA_OWNER_ONLY (defined here,
@@ -990,7 +1021,7 @@ Table of Contents
    narrowing (single-writer files, files with a well-known writer set)
    MAY leave it clear.
 
-11.7.  Cryptographic-Checksum Deployments
+12.7.  Cryptographic-Checksum Deployments
 
    Deployments that select a cryptographic checksum algorithm (SHA-
    family, BLAKE-family) for ffv2m_checksum_algorithm cannot use
@@ -1001,7 +1032,7 @@ Table of Contents
    weaken cryptographic-checksum deployments in any way, as the
    capability conjunction structurally excludes them.
 
-12.  IANA Considerations
+13.  IANA Considerations
 
    Following the pattern established by the flexible file v2 layout
    family ([I-D.haynes-nfsv4-flexfiles-v2]) that operation numbers in
@@ -1018,7 +1049,7 @@ Table of Contents
 
    This document requests the following IANA actions:
 
-12.1.  Encoding Registry: XOR-Delta-Capable Column
+13.1.  Encoding Registry: XOR-Delta-Capable Column
 
    Add a new column named "XOR-Delta-Capable" (boolean) to the "Flexible
    File Version 2 Layout Type Erasure Coding Type Registry" defined in
@@ -1057,7 +1088,7 @@ Table of Contents
       flag value is nominally CLEAR but the operation itself is
       structurally inapplicable.
 
-12.2.  Checksum Registry: XOR-Affine Column
+13.2.  Checksum Registry: XOR-Affine Column
 
    Add a new column named "XOR-Affine" (boolean) to the "Flexible File
    Version 2 Layout Type Checksum Algorithm Registry" defined in
@@ -1095,13 +1126,13 @@ Table of Contents
    implementing the conjunction directly derives the correct answer for
    every entry, including CHECKSUM_ALG_NONE (SET AND SET = SET).
 
-12.3.  New Error Codes
+13.3.  New Error Codes
 
    Following the pattern established by [I-D.haynes-nfsv4-flexfiles-v2]
    that nfsstat4 codes scoped to the flexible file v2 layout protocol
    family are assigned by publication of the specifying document (no
    IANA nfsstat4 registry exists), this document assigns the codes in
-   Figure 9.
+   Figure 11.
 
       ///
       /// /* Delta-write error constants; added to nfsstat4 enum */
@@ -1110,7 +1141,7 @@ Table of Contents
       /// const NFS4ERR_DELTA_LOG_FULL   = 10111;
       ///
 
-               Figure 9: XDR for the delta-write error codes
+               Figure 11: XDR for the delta-write error codes
 
    NFS4ERR_DELTA_INCOMPLETE:  returned by CHUNK_FINALIZE when the
       recorded delta-log sequence numbers do not form a contiguous range
@@ -1125,7 +1156,7 @@ Table of Contents
    = NFS4ERR_CHUNK_GUARDED and neighbors) with a gap for future CHUNK
    operation codes.
 
-12.4.  New Layout Flag
+13.4.  New Layout Flag
 
    Following the same pattern (no IANA registry for flexible file v2
    layout flags), this document assigns:
@@ -1139,16 +1170,16 @@ Table of Contents
    low-order bits inherited from ff_flags4.  No IANA action is
    requested.
 
-13.  References
+14.  References
 
-13.1.  Normative References
+14.1.  Normative References
 
    [I-D.haynes-nfsv4-flexfiles-v2]
               Haynes, T., "Parallel NFS (pNFS) Flexible File Layout
               Version 2", Work in Progress, Internet-Draft, draft-
-              haynes-nfsv4-flexfiles-v2-07, 24 July 2026,
+              haynes-nfsv4-flexfiles-v2-08, 7 August 2026,
               <https://datatracker.ietf.org/doc/html/draft-haynes-nfsv4-
-              flexfiles-v2-07>.
+              flexfiles-v2-08>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -1164,15 +1195,25 @@ Table of Contents
               Protocol", RFC 5661, DOI 10.17487/RFC5661, January 2010,
               <https://www.rfc-editor.org/rfc/rfc5661>.
 
+   [RFC7863]  Haynes, T., "Network File System (NFS) Version 4 Minor
+              Version 2 External Data Representation Standard (XDR)
+              Description", RFC 7863, DOI 10.17487/RFC7863, November
+              2016, <https://www.rfc-editor.org/rfc/rfc7863>.
+
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
-13.2.  Informative References
+14.2.  Informative References
 
    [MOJETTE-1995]
               Guédon, J-P. and N. Normand, "The Mojette Transform:
               Application to Image Coding", 1995.
+
+   [POSIX]    IEEE and The Open Group, "IEEE Standard for Information
+              Technology--Portable Operating System Interface (POSIX)
+              Base Specifications, Issue 8", IEEE Std 1003.1-2024, 2024,
+              <https://standards.ieee.org/ieee/1003.1/7700/>.
 
 Appendix A.  Worked Example: HPC Checkpoint at 1000 Ranks
 

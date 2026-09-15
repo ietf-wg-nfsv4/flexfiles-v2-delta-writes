@@ -7,9 +7,9 @@
 <title>Delta-Write Extension for the Flexible File Version 2 Layout Type</title>
 <meta content="Thomas Haynes" name="author">
 <meta content="
-       The Flexible File Version 2 pNFS layout type
-  defines a chunk-oriented
-data-server protocol in which every write is a full-chunk payload.
+       The Flexible File Version 2 pNFS layout type defines a
+chunk-oriented data-server protocol in which every write is a
+full-chunk payload.
 For workloads that make small edits to files protected by an
 XOR-based erasure encoding, this forces client-side stripe fetch,
 re-encode, and transmit on every edit, with wire amplification of
@@ -31,18 +31,18 @@ the existing chunk state machine with no new commit protocol.
 <meta content="draft-haynes-nfsv4-flexfiles-v2-delta-writes-latest" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.34.0
-    Python 3.14.5
+    Python 3.14.7
     ConfigArgParse 1.7.5
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
     lxml 6.1.1
     natsort 8.4.0
-    platformdirs 4.11.0
+    platformdirs 4.11.7
     pycountry 24.6.1
     PyYAML 6.0.3
     requests 2.33.1
-    wcwidth 0.8.2
+    wcwidth 0.8.3
 -->
 <link href="draft-haynes-nfsv4-flexfiles-v2-delta-writes.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1058,11 +1058,11 @@ svg {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">FFv2 Delta Writes</td>
-<td class="right">August 2026</td>
+<td class="right">September 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Haynes</td>
-<td class="center">Expires 8 February 2027</td>
+<td class="center">Expires 19 March 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1075,12 +1075,12 @@ svg {
 <dd class="internet-draft">draft-haynes-nfsv4-flexfiles-v2-delta-writes-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-08-07" class="published">7 August 2026</time>
+<time datetime="2026-09-15" class="published">15 September 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-02-08">8 February 2027</time></dd>
+<dd class="expires"><time datetime="2027-03-19">19 March 2027</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1093,9 +1093,9 @@ svg {
 <h1 id="title">Delta-Write Extension for the Flexible File Version 2 Layout Type</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">The Flexible File Version 2 pNFS layout type
-<span>[<a href="#I-D.haynes-nfsv4-flexfiles-v2" class="cite xref">I-D.haynes-nfsv4-flexfiles-v2</a>]</span> defines a chunk-oriented
-data-server protocol in which every write is a full-chunk payload.
+<p id="section-abstract-1">The Flexible File Version 2 pNFS layout type defines a
+chunk-oriented data-server protocol in which every write is a
+full-chunk payload.
 For workloads that make small edits to files protected by an
 XOR-based erasure encoding, this forces client-side stripe fetch,
 re-encode, and transmit on every edit, with wire amplification of
@@ -1142,7 +1142,7 @@ the existing chunk state machine with no new commit protocol.<a href="#section-a
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 8 February 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 19 March 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1262,84 +1262,87 @@ the existing chunk state machine with no new commit protocol.<a href="#section-a
             <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-layout-revocation-and-state" class="internal xref">Layout Revocation and Stateid Semantics</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
-                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-authorization-equivalence" class="internal xref">Authorization Equivalence</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
-                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-transport-security" class="internal xref">Transport Security</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.3">
-                <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-denial-of-service-via-open-" class="internal xref">Denial of Service via Open Epochs</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.4">
-                <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-retransmit-mismatch" class="internal xref">Retransmit Mismatch</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.5">
-                <p id="section-toc.1-1.11.2.5.1"><a href="#section-11.5" class="auto internal xref">11.5</a>.  <a href="#name-log-capacity-disclosure" class="internal xref">Log-Capacity Disclosure</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.6">
-                <p id="section-toc.1-1.11.2.6.1"><a href="#section-11.6" class="auto internal xref">11.6</a>.  <a href="#name-optional-ownership-restrict" class="internal xref">Optional Ownership Restriction</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.7">
-                <p id="section-toc.1-1.11.2.7.1"><a href="#section-11.7" class="auto internal xref">11.7</a>.  <a href="#name-cryptographic-checksum-depl" class="internal xref">Cryptographic-Checksum Deployments</a></p>
-</li>
-            </ul>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-xdr-description-of-the-chun" class="internal xref">XDR Description of the CHUNK_XOR_DELTA Operation</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.1">
-                <p id="section-toc.1-1.12.2.1.1"><a href="#section-12.1" class="auto internal xref">12.1</a>.  <a href="#name-encoding-registry-xor-delta" class="internal xref">Encoding Registry: XOR-Delta-Capable Column</a></p>
+                <p id="section-toc.1-1.12.2.1.1"><a href="#section-12.1" class="auto internal xref">12.1</a>.  <a href="#name-authorization-equivalence" class="internal xref">Authorization Equivalence</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.2">
-                <p id="section-toc.1-1.12.2.2.1"><a href="#section-12.2" class="auto internal xref">12.2</a>.  <a href="#name-checksum-registry-xor-affin" class="internal xref">Checksum Registry: XOR-Affine Column</a></p>
+                <p id="section-toc.1-1.12.2.2.1"><a href="#section-12.2" class="auto internal xref">12.2</a>.  <a href="#name-transport-security" class="internal xref">Transport Security</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.3">
-                <p id="section-toc.1-1.12.2.3.1"><a href="#section-12.3" class="auto internal xref">12.3</a>.  <a href="#name-new-error-codes" class="internal xref">New Error Codes</a></p>
+                <p id="section-toc.1-1.12.2.3.1"><a href="#section-12.3" class="auto internal xref">12.3</a>.  <a href="#name-denial-of-service-via-open-" class="internal xref">Denial of Service via Open Epochs</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.4">
-                <p id="section-toc.1-1.12.2.4.1"><a href="#section-12.4" class="auto internal xref">12.4</a>.  <a href="#name-new-layout-flag" class="internal xref">New Layout Flag</a></p>
+                <p id="section-toc.1-1.12.2.4.1"><a href="#section-12.4" class="auto internal xref">12.4</a>.  <a href="#name-retransmit-mismatch" class="internal xref">Retransmit Mismatch</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.5">
+                <p id="section-toc.1-1.12.2.5.1"><a href="#section-12.5" class="auto internal xref">12.5</a>.  <a href="#name-log-capacity-disclosure" class="internal xref">Log-Capacity Disclosure</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.6">
+                <p id="section-toc.1-1.12.2.6.1"><a href="#section-12.6" class="auto internal xref">12.6</a>.  <a href="#name-optional-ownership-restrict" class="internal xref">Optional Ownership Restriction</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.7">
+                <p id="section-toc.1-1.12.2.7.1"><a href="#section-12.7" class="auto internal xref">12.7</a>.  <a href="#name-cryptographic-checksum-depl" class="internal xref">Cryptographic-Checksum Deployments</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-references" class="internal xref">References</a></p>
+            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.1">
-                <p id="section-toc.1-1.13.2.1.1"><a href="#section-13.1" class="auto internal xref">13.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+                <p id="section-toc.1-1.13.2.1.1"><a href="#section-13.1" class="auto internal xref">13.1</a>.  <a href="#name-encoding-registry-xor-delta" class="internal xref">Encoding Registry: XOR-Delta-Capable Column</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.2">
-                <p id="section-toc.1-1.13.2.2.1"><a href="#section-13.2" class="auto internal xref">13.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+                <p id="section-toc.1-1.13.2.2.1"><a href="#section-13.2" class="auto internal xref">13.2</a>.  <a href="#name-checksum-registry-xor-affin" class="internal xref">Checksum Registry: XOR-Affine Column</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.3">
+                <p id="section-toc.1-1.13.2.3.1"><a href="#section-13.3" class="auto internal xref">13.3</a>.  <a href="#name-new-error-codes" class="internal xref">New Error Codes</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.4">
+                <p id="section-toc.1-1.13.2.4.1"><a href="#section-13.4" class="auto internal xref">13.4</a>.  <a href="#name-new-layout-flag" class="internal xref">New Layout Flag</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
-            <p id="section-toc.1-1.14.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-worked-example-hpc-checkpoi" class="internal xref">Worked Example: HPC Checkpoint at 1000 Ranks</a></p>
+            <p id="section-toc.1-1.14.1"><a href="#section-14" class="auto internal xref">14</a>. <a href="#name-references" class="internal xref">References</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.1">
-                <p id="section-toc.1-1.14.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-scenario" class="internal xref">Scenario</a></p>
+                <p id="section-toc.1-1.14.2.1.1"><a href="#section-14.1" class="auto internal xref">14.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.2">
-                <p id="section-toc.1-1.14.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-path-a-base-chunk_write" class="internal xref">Path A: Base CHUNK_WRITE</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.3">
-                <p id="section-toc.1-1.14.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-path-b-chunk_xor_delta" class="internal xref">Path B: CHUNK_XOR_DELTA</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.4">
-                <p id="section-toc.1-1.14.2.4.1"><a href="#appendix-A.4" class="auto internal xref">A.4</a>.  <a href="#name-cost-comparison" class="internal xref">Cost Comparison</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.5">
-                <p id="section-toc.1-1.14.2.5.1"><a href="#appendix-A.5" class="auto internal xref">A.5</a>.  <a href="#name-assumptions-and-caveats" class="internal xref">Assumptions and Caveats</a></p>
+                <p id="section-toc.1-1.14.2.2.1"><a href="#section-14.2" class="auto internal xref">14.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
-            <p id="section-toc.1-1.15.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+            <p id="section-toc.1-1.15.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-worked-example-hpc-checkpoi" class="internal xref">Worked Example: HPC Checkpoint at 1000 Ranks</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.1">
+                <p id="section-toc.1-1.15.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-scenario" class="internal xref">Scenario</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.2">
+                <p id="section-toc.1-1.15.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-path-a-base-chunk_write" class="internal xref">Path A: Base CHUNK_WRITE</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.3">
+                <p id="section-toc.1-1.15.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-path-b-chunk_xor_delta" class="internal xref">Path B: CHUNK_XOR_DELTA</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.4">
+                <p id="section-toc.1-1.15.2.4.1"><a href="#appendix-A.4" class="auto internal xref">A.4</a>.  <a href="#name-cost-comparison" class="internal xref">Cost Comparison</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15.2.5">
+                <p id="section-toc.1-1.15.2.5.1"><a href="#appendix-A.5" class="auto internal xref">A.5</a>.  <a href="#name-assumptions-and-caveats" class="internal xref">Assumptions and Caveats</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16">
-            <p id="section-toc.1-1.16.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.16.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.17">
+            <p id="section-toc.1-1.17.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1432,7 +1435,7 @@ added to <code>ffv2_mirror4</code>; capability is fully derivable from fields
 already present.<a href="#section-1-10" class="pilcrow">¶</a></p>
 <p id="section-1-11">A flag the client cannot read is clear.  This covers a registry copy
 predating the columns this document adds
-(<a href="#sec-iana-encoding-flag" class="auto internal xref">Section 12.1</a>, <a href="#sec-iana-checksum-flag" class="auto internal xref">Section 12.2</a>), an encoding
+(<a href="#sec-iana-encoding-flag" class="auto internal xref">Section 13.1</a>, <a href="#sec-iana-checksum-flag" class="auto internal xref">Section 13.2</a>), an encoding
 or checksum value the client does not recognize, and a registry the
 client cannot consult at all.  Capability <span class="bcp14">MUST NOT</span> be inferred from
 the encoding's name, from the layout alone, or from the fact that a
@@ -1569,7 +1572,7 @@ chunk's governing layout:<a href="#section-3-1" class="pilcrow">¶</a></p>
           <p id="section-3-2.1.1">The layout's declared encoding (see the base specification's
 <code>ffv2_coding_type4</code> and the Erasure Encoding Type Registry in
 <span>[<a href="#I-D.haynes-nfsv4-flexfiles-v2" class="cite xref">I-D.haynes-nfsv4-flexfiles-v2</a>]</span>) has the flag
-EC_ENC_FLAGS_XOR_DELTA_CAPABLE set (<a href="#sec-iana-encoding-flag" class="auto internal xref">Section 12.1</a>);
+EC_ENC_FLAGS_XOR_DELTA_CAPABLE set (<a href="#sec-iana-encoding-flag" class="auto internal xref">Section 13.1</a>);
 i.e., the encoding is XOR-linear as defined in
 <a href="#sec-terminology" class="auto internal xref">Section 2</a>.<a href="#section-3-2.1.1" class="pilcrow">¶</a></p>
 </li>
@@ -1577,7 +1580,7 @@ i.e., the encoding is XOR-linear as defined in
           <p id="section-3-2.2.1">The layout's <code>ffv2m_checksum_algorithm</code> has the flag
 CHECKSUM_FLAGS_XOR_AFFINE set in the Checksum Algorithm
 Registry defined in <span>[<a href="#I-D.haynes-nfsv4-flexfiles-v2" class="cite xref">I-D.haynes-nfsv4-flexfiles-v2</a>]</span>
-(<a href="#sec-iana-checksum-flag" class="auto internal xref">Section 12.2</a>).<a href="#section-3-2.2.1" class="pilcrow">¶</a></p>
+(<a href="#sec-iana-checksum-flag" class="auto internal xref">Section 13.2</a>).<a href="#section-3-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-3-3">Capability is thus a derived, static property of the (encoding,
@@ -1893,7 +1896,7 @@ header fields.<a href="#section-5-2.2.1" class="pilcrow">¶</a></p>
 <p id="section-5-3">The checksum algorithm registry defined by
 <span>[<a href="#I-D.haynes-nfsv4-flexfiles-v2" class="cite xref">I-D.haynes-nfsv4-flexfiles-v2</a>]</span> <span class="bcp14">MUST</span> be extended with a
 boolean capability flag CHECKSUM_FLAGS_XOR_AFFINE
-(<a href="#sec-iana-checksum-flag" class="auto internal xref">Section 12.2</a>).  CHECKSUM_ALG_CRC32 and
+(<a href="#sec-iana-checksum-flag" class="auto internal xref">Section 13.2</a>).  CHECKSUM_ALG_CRC32 and
 CHECKSUM_ALG_CRC32C set this flag; CHECKSUM_ALG_FLETCHER4 and the
 cryptographic-hash algorithms (CHECKSUM_ALG_SHA256,
 CHECKSUM_ALG_SHA512, CHECKSUM_ALG_BLAKE3) do not.<a href="#section-5-3" class="pilcrow">¶</a></p>
@@ -2328,39 +2331,85 @@ revocation is to preserve the last-committed state -- which is
 exactly what pre-epoch rollback delivers.<a href="#section-10-4" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="sec-security">
+<div id="sec-xdr-extraction">
 <section id="section-11">
+      <h2 id="name-xdr-description-of-the-chun">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-xdr-description-of-the-chun" class="section-name selfRef">XDR Description of the CHUNK_XOR_DELTA Operation</a>
+      </h2>
+<p id="section-11-1">This document contains the External Data Representation (XDR)
+<span>[<a href="#RFC4506" class="cite xref">RFC4506</a>]</span> description of the CHUNK_XOR_DELTA Operation.  The XDR
+description is embedded in this document in a way that makes it simple
+for the reader to extract into a ready-to-compile form.  The reader can
+feed this document into the shell script in <a href="#fig-extract" class="auto internal xref">Figure 9</a>, which
+relies on the sh, grep, and sed utilities as specified by <span>[<a href="#POSIX" class="cite xref">POSIX</a>]</span>,
+to produce the machine-readable XDR description.<a href="#section-11-1" class="pilcrow">¶</a></p>
+<span id="name-extractsh"></span><div id="fig-extract">
+<figure id="figure-9">
+        <div class="lang-shell sourcecode" id="section-11-2.1">
+<pre>
+#!/bin/sh
+grep '^ *///' $* | sed 's?^ */// ??' | sed 's?^ *///$??'
+</pre>
+</div>
+<figcaption><a href="#figure-9" class="selfRef">Figure 9</a>:
+<a href="#name-extractsh" class="selfRef">extract.sh</a>
+        </figcaption></figure>
+</div>
+<p id="section-11-3">That is, if the above script is stored in a file called "extract.sh"
+and this document is in a file called "spec.txt", then the reader can
+run the script as in <a href="#fig-extract-example" class="auto internal xref">Figure 10</a>.<a href="#section-11-3" class="pilcrow">¶</a></p>
+<span id="name-example-use-of-extractsh"></span><div id="fig-extract-example">
+<figure id="figure-10">
+        <div class="lang-shell sourcecode" id="section-11-4.1">
+<pre>
+sh extract.sh &lt; spec.txt &gt; flex_files2_delta_prot.x
+</pre>
+</div>
+<figcaption><a href="#figure-10" class="selfRef">Figure 10</a>:
+<a href="#name-example-use-of-extractsh" class="selfRef">Example use of extract.sh</a>
+        </figcaption></figure>
+</div>
+<p id="section-11-5">The effect of the script is to remove leading blank space from each
+line, plus a sentinel sequence of "///".<a href="#section-11-5" class="pilcrow">¶</a></p>
+<p id="section-11-6">The XDR extracted from this document is not self-contained: it
+amends the XDR of <span>[<a href="#RFC7863" class="cite xref">RFC7863</a>]</span> and <span>[<a href="#I-D.haynes-nfsv4-flexfiles-v2" class="cite xref">I-D.haynes-nfsv4-flexfiles-v2</a>]</span>,
+and the amendment blocks are to be placed at the extension points
+those documents define.<a href="#section-11-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-security">
+<section id="section-12">
       <h2 id="name-security-considerations">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
 <div id="authorization-equivalence">
-<section id="section-11.1">
+<section id="section-12.1">
         <h3 id="name-authorization-equivalence">
-<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-authorization-equivalence" class="section-name selfRef">Authorization Equivalence</a>
+<a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-authorization-equivalence" class="section-name selfRef">Authorization Equivalence</a>
         </h3>
-<p id="section-11.1-1">Any principal authorized to issue CHUNK_WRITE against a chunk is,
+<p id="section-12.1-1">Any principal authorized to issue CHUNK_WRITE against a chunk is,
 by construction, authorized to write any byte sequence into that
 chunk.  CHUNK_XOR_DELTA is strictly less expressive than CHUNK_WRITE
 (deltas can only modify existing bytes, not overwrite arbitrarily),
 so it introduces no new authorization capability.  A malicious
 authorized writer can already corrupt the chunk via CHUNK_WRITE; the
-delta-write path is not a new attack surface for that principal.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
-<p id="section-11.1-2">The novel threat model to consider is <em>partial-application
+delta-write path is not a new attack surface for that principal.<a href="#section-12.1-1" class="pilcrow">¶</a></p>
+<p id="section-12.1-2">The novel threat model to consider is <em>partial-application
 laundering</em>: a malicious writer applies deltas to some but not all
 projections, hoping to induce repair to lock in incorrect bytes.
 This threat is closed by the repair-path rule in <a href="#sec-repair" class="auto internal xref">Section 9</a>:
 repair <span class="bcp14">MUST NOT</span> reconstruct from the majority while an epoch is
 open.  The epoch-open state on any surviving projection is the
 signal that partial application may have occurred; repair either
-waits for closure or explicitly rolls back.<a href="#section-11.1-2" class="pilcrow">¶</a></p>
+waits for closure or explicitly rolls back.<a href="#section-12.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="transport-security">
-<section id="section-11.2">
+<section id="section-12.2">
         <h3 id="name-transport-security">
-<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-transport-security" class="section-name selfRef">Transport Security</a>
+<a href="#section-12.2" class="section-number selfRef">12.2. </a><a href="#name-transport-security" class="section-name selfRef">Transport Security</a>
         </h3>
-<p id="section-11.2-1">CHUNK_XOR_DELTA <span class="bcp14">MUST</span> be issued over a transport that provides
+<p id="section-12.2-1">CHUNK_XOR_DELTA <span class="bcp14">MUST</span> be issued over a transport that provides
 integrity protection at the RPC layer (for example RPCSEC_GSS with
 krb5i <span>[<a href="#RFC5661" class="cite xref">RFC5661</a>]</span>, or an equivalent mechanism).  This requirement
 binds regardless of the transport-security posture of any other
@@ -2369,31 +2418,31 @@ to a projection whose integrity is not authenticated is
 indistinguishable at the data server from a forged write and cannot be
 reconciled by any downstream mechanism defined in this document.  The
 wire XDR carries no confidentiality of its own and its integrity is
-not self-authenticating.<a href="#section-11.2-1" class="pilcrow">¶</a></p>
+not self-authenticating.<a href="#section-12.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="denial-of-service-via-open-epochs">
-<section id="section-11.3">
+<section id="section-12.3">
         <h3 id="name-denial-of-service-via-open-">
-<a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-denial-of-service-via-open-" class="section-name selfRef">Denial of Service via Open Epochs</a>
+<a href="#section-12.3" class="section-number selfRef">12.3. </a><a href="#name-denial-of-service-via-open-" class="section-name selfRef">Denial of Service via Open Epochs</a>
         </h3>
-<p id="section-11.3-1">Per <a href="#sec-epochs" class="auto internal xref">Section 6</a> the data server bounds the delta log for each open
+<p id="section-12.3-1">Per <a href="#sec-epochs" class="auto internal xref">Section 6</a> the data server bounds the delta log for each open
 epoch, but the aggregate number of concurrently open epochs held by a
 single client across chunks and across files is not bounded by
 protocol.  A misbehaving or wedged writer that opens many epochs
-without finalizing can:<a href="#section-11.3-1" class="pilcrow">¶</a></p>
+without finalizing can:<a href="#section-12.3-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-11.3-2.1">
-            <p id="section-11.3-2.1.1">Accumulate per-epoch log state on each affected data server, consuming
-bounded but non-trivial data server memory<a href="#section-11.3-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-12.3-2.1">
+            <p id="section-12.3-2.1.1">Accumulate per-epoch log state on each affected data server, consuming
+bounded but non-trivial data server memory<a href="#section-12.3-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-11.3-2.2">
-            <p id="section-11.3-2.2.1">Stall repair on every affected chunk, since <a href="#sec-repair" class="auto internal xref">Section 9</a> requires
+          <li class="normal" id="section-12.3-2.2">
+            <p id="section-12.3-2.2.1">Stall repair on every affected chunk, since <a href="#sec-repair" class="auto internal xref">Section 9</a> requires
 the repair coordinator to wait for open epochs to close before
-reconstructing<a href="#section-11.3-2.2.1" class="pilcrow">¶</a></p>
+reconstructing<a href="#section-12.3-2.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-11.3-3">A data server <span class="bcp14">SHOULD</span> impose an implementation-defined aggregate cap on
+<p id="section-12.3-3">A data server <span class="bcp14">SHOULD</span> impose an implementation-defined aggregate cap on
 the number of concurrent open epochs per client stateid.  On hitting
 the cap, further EPOCH_OPEN attempts <span class="bcp14">MUST</span> be rejected with
 NFS4ERR_DELAY <span>[<a href="#RFC5661" class="cite xref">RFC5661</a>]</span> (retriable at the RPC layer without
@@ -2403,19 +2452,19 @@ that receives NFS4ERR_DELAY on EPOCH_OPEN <span class="bcp14">MUST NOT</span> re
 EPOCH_OPEN immediately; it <span class="bcp14">SHOULD</span> first close (via CHUNK_FINALIZE or
 CHUNK_ROLLBACK) at least one of its currently open epochs, then <span class="bcp14">MAY</span>
 retry.  Retrying without closing an epoch is protocol-legal but will
-typically fail again with NFS4ERR_DELAY.<a href="#section-11.3-3" class="pilcrow">¶</a></p>
-<p id="section-11.3-4">The metadata server's remedy against an unresponsive-writer scenario
+typically fail again with NFS4ERR_DELAY.<a href="#section-12.3-3" class="pilcrow">¶</a></p>
+<p id="section-12.3-4">The metadata server's remedy against an unresponsive-writer scenario
 is layout recall or stateid revocation (<a href="#sec-revocation" class="auto internal xref">Section 10</a>), which
 forces data server rollback of all epochs bound to the revoked
-stateid.<a href="#section-11.3-4" class="pilcrow">¶</a></p>
+stateid.<a href="#section-12.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="retransmit-mismatch">
-<section id="section-11.4">
+<section id="section-12.4">
         <h3 id="name-retransmit-mismatch">
-<a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-retransmit-mismatch" class="section-name selfRef">Retransmit Mismatch</a>
+<a href="#section-12.4" class="section-number selfRef">12.4. </a><a href="#name-retransmit-mismatch" class="section-name selfRef">Retransmit Mismatch</a>
         </h3>
-<p id="section-11.4-1"><a href="#sec-concurrency" class="auto internal xref">Section 7</a> specifies that a data server receiving a duplicate
+<p id="section-12.4-1"><a href="#sec-concurrency" class="auto internal xref">Section 7</a> specifies that a data server receiving a duplicate
 <code>cxde_seq</code> in the same epoch <span class="bcp14">MUST NOT</span> re-apply the delta and <span class="bcp14">MUST</span>
 return the same result as the original response.  If the retransmit
 carries the same (cxda_guard, cxda_owner, cxde_seq) but differs from
@@ -2423,141 +2472,141 @@ the original in <code>cxde_bin_offset</code> or <code>cxde_delta</code> bytes, t
 indicates either a client bug or a wire-level tamper past the
 integrity protection in force.  The data server <span class="bcp14">MUST</span> reject such a
 mismatch with NFS4ERR_INVAL and <span class="bcp14">SHOULD</span> log the event for
-administrative review.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
+administrative review.<a href="#section-12.4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="log-capacity-disclosure">
-<section id="section-11.5">
+<section id="section-12.5">
         <h3 id="name-log-capacity-disclosure">
-<a href="#section-11.5" class="section-number selfRef">11.5. </a><a href="#name-log-capacity-disclosure" class="section-name selfRef">Log-Capacity Disclosure</a>
+<a href="#section-12.5" class="section-number selfRef">12.5. </a><a href="#name-log-capacity-disclosure" class="section-name selfRef">Log-Capacity Disclosure</a>
         </h3>
-<p id="section-11.5-1">The response fields <code>cxdr_log_bytes_used</code> and
+<p id="section-12.5-1">The response fields <code>cxdr_log_bytes_used</code> and
 <code>cxdr_log_bytes_available</code> disclose the data server's per-chunk
 delta-log occupancy to the client.  This disclosure is intentional --
 the client needs the signal to decide whether to close-and-reopen an
 epoch or fall back to CHUNK_WRITE.  The information is limited to
 principals already authorized to issue CHUNK_XOR_DELTA against the
-chunk in question; no additional confidentiality boundary is crossed.<a href="#section-11.5-1" class="pilcrow">¶</a></p>
+chunk in question; no additional confidentiality boundary is crossed.<a href="#section-12.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="optional-ownership-restriction">
-<section id="section-11.6">
+<section id="section-12.6">
         <h3 id="name-optional-ownership-restrict">
-<a href="#section-11.6" class="section-number selfRef">11.6. </a><a href="#name-optional-ownership-restrict" class="section-name selfRef">Optional Ownership Restriction</a>
+<a href="#section-12.6" class="section-number selfRef">12.6. </a><a href="#name-optional-ownership-restrict" class="section-name selfRef">Optional Ownership Restriction</a>
         </h3>
-<p id="section-11.6-1">Deployments that wish to further narrow the writer set for a file <span class="bcp14">MAY</span>
+<p id="section-12.6-1">Deployments that wish to further narrow the writer set for a file <span class="bcp14">MAY</span>
 set the layout flag FFV2_FLAGS_DELTA_OWNER_ONLY (defined here,
 registered against <code>ffv2_layout_flags4</code>).  When set on a layout, data
 servers <span class="bcp14">MUST</span> reject CHUNK_XOR_DELTA whose <code>cxda_owner</code> does not match
 the <code>chunk_owner4</code> of the current COMMITTED generation of the target
 chunk.  This restricts delta epochs to the writer who last wrote the
 chunk, which is the natural semantics for the HPC checkpoint workload
-(each rank owns its stride).<a href="#section-11.6-1" class="pilcrow">¶</a></p>
-<p id="section-11.6-2">This flag is optional; deployments that do not need per-writer
+(each rank owns its stride).<a href="#section-12.6-1" class="pilcrow">¶</a></p>
+<p id="section-12.6-2">This flag is optional; deployments that do not need per-writer
 narrowing (single-writer files, files with a well-known writer set)
-<span class="bcp14">MAY</span> leave it clear.<a href="#section-11.6-2" class="pilcrow">¶</a></p>
+<span class="bcp14">MAY</span> leave it clear.<a href="#section-12.6-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="cryptographic-checksum-deployments">
-<section id="section-11.7">
+<section id="section-12.7">
         <h3 id="name-cryptographic-checksum-depl">
-<a href="#section-11.7" class="section-number selfRef">11.7. </a><a href="#name-cryptographic-checksum-depl" class="section-name selfRef">Cryptographic-Checksum Deployments</a>
+<a href="#section-12.7" class="section-number selfRef">12.7. </a><a href="#name-cryptographic-checksum-depl" class="section-name selfRef">Cryptographic-Checksum Deployments</a>
         </h3>
-<p id="section-11.7-1">Deployments that select a cryptographic checksum algorithm
+<p id="section-12.7-1">Deployments that select a cryptographic checksum algorithm
 (SHA-family, BLAKE-family) for <code>ffv2m_checksum_algorithm</code> cannot use
 CHUNK_XOR_DELTA (see <a href="#sec-scope" class="auto internal xref">Section 3</a>).  Such deployments have chosen
 adversarial-resistance for chunk envelopes at the cost of some
 performance optimizations; this is a coherent, spec-compliant
 posture and does not require workaround.  The extension defined here
 does not weaken cryptographic-checksum deployments in any way, as
-the capability conjunction structurally excludes them.<a href="#section-11.7-1" class="pilcrow">¶</a></p>
+the capability conjunction structurally excludes them.<a href="#section-12.7-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="sec-iana">
-<section id="section-12">
+<section id="section-13">
       <h2 id="name-iana-considerations">
-<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-12-1">Following the pattern established by the flexible file v2 layout family
+<p id="section-13-1">Following the pattern established by the flexible file v2 layout family
 (<span>[<a href="#I-D.haynes-nfsv4-flexfiles-v2" class="cite xref">I-D.haynes-nfsv4-flexfiles-v2</a>]</span>) that operation numbers
 in the NFSv4.2 opnum space are assigned by publication of the
 specifying document, operation number 100 is assigned to
 CHUNK_XOR_DELTA by publication of this document.  No IANA action
 is requested for the operation number.  100 was the next value
 available above the range <span>[<a href="#I-D.haynes-nfsv4-flexfiles-v2" class="cite xref">I-D.haynes-nfsv4-flexfiles-v2</a>]</span> and the
-proxy server document allocate.<a href="#section-12-1" class="pilcrow">¶</a></p>
-<p id="section-12-2">Opcode values <span class="bcp14">MUST NOT</span> overlap across family documents; a future
+proxy server document allocate.<a href="#section-13-1" class="pilcrow">¶</a></p>
+<p id="section-13-2">Opcode values <span class="bcp14">MUST NOT</span> overlap across family documents; a future
 extension <span class="bcp14">MUST</span> take the next available value, and <span class="bcp14">MUST NOT</span> re-use any
-value the family has already allocated.<a href="#section-12-2" class="pilcrow">¶</a></p>
-<p id="section-12-3">This document requests the following IANA actions:<a href="#section-12-3" class="pilcrow">¶</a></p>
+value the family has already allocated.<a href="#section-13-2" class="pilcrow">¶</a></p>
+<p id="section-13-3">This document requests the following IANA actions:<a href="#section-13-3" class="pilcrow">¶</a></p>
 <div id="sec-iana-encoding-flag">
-<section id="section-12.1">
+<section id="section-13.1">
         <h3 id="name-encoding-registry-xor-delta">
-<a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-encoding-registry-xor-delta" class="section-name selfRef">Encoding Registry: XOR-Delta-Capable Column</a>
+<a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-encoding-registry-xor-delta" class="section-name selfRef">Encoding Registry: XOR-Delta-Capable Column</a>
         </h3>
-<p id="section-12.1-1">Add a new column named "XOR-Delta-Capable" (boolean) to the
+<p id="section-13.1-1">Add a new column named "XOR-Delta-Capable" (boolean) to the
 "Flexible File Version 2 Layout Type Erasure Coding Type Registry"
 defined in <span>[<a href="#I-D.haynes-nfsv4-flexfiles-v2" class="cite xref">I-D.haynes-nfsv4-flexfiles-v2</a>]</span>.
 The column is called EC_ENC_FLAGS_XOR_DELTA_CAPABLE in prose
-references.<a href="#section-12.1-1" class="pilcrow">¶</a></p>
-<p id="section-12.1-2">Set for encodings whose parity is expressible as an XOR combination
+references.<a href="#section-13.1-1" class="pilcrow">¶</a></p>
+<p id="section-13.1-2">Set for encodings whose parity is expressible as an XOR combination
 of source bytes AND whose data-shard bytes are directly readable
 from a single projection (systematic property).  Clear otherwise.
-Initial assignments:<a href="#section-12.1-2" class="pilcrow">¶</a></p>
+Initial assignments:<a href="#section-13.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-12.1-3.1">
-            <p id="section-12.1-3.1.1">FFV2_ENCODING_MIRRORED: SET (identity encoding; delta at
+<li class="normal" id="section-13.1-3.1">
+            <p id="section-13.1-3.1.1">FFV2_ENCODING_MIRRORED: SET (identity encoding; delta at
 <code>(chunk_offset, bin_offset)</code> applied to every mirror at the same
-offset converges to the correct state)<a href="#section-12.1-3.1.1" class="pilcrow">¶</a></p>
+offset converges to the correct state)<a href="#section-13.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-3.2">
-            <p id="section-12.1-3.2.1">FFV2_ENCODING_MOJETTE_SYSTEMATIC: SET<a href="#section-12.1-3.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.1-3.2">
+            <p id="section-13.1-3.2.1">FFV2_ENCODING_MOJETTE_SYSTEMATIC: SET<a href="#section-13.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-3.3">
-            <p id="section-12.1-3.3.1">FFV2_ENCODING_MOJETTE_NON_SYSTEMATIC: CLEAR (XOR-linear but
+          <li class="normal" id="section-13.1-3.3">
+            <p id="section-13.1-3.3.1">FFV2_ENCODING_MOJETTE_NON_SYSTEMATIC: CLEAR (XOR-linear but
 non-systematic; recovering D_old requires k projection reads and
 an inverse transform, defeating the delta-write purpose.
 Support for non-systematic XOR-linear encodings is deferred to
-a follow-up specification.)<a href="#section-12.1-3.3.1" class="pilcrow">¶</a></p>
+a follow-up specification.)<a href="#section-13.1-3.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-3.4">
-            <p id="section-12.1-3.4.1">FFV2_ENCODING_XOR_PARITY: SET<a href="#section-12.1-3.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.1-3.4">
+            <p id="section-13.1-3.4.1">FFV2_ENCODING_XOR_PARITY: SET<a href="#section-13.1-3.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-3.5">
-            <p id="section-12.1-3.5.1">FFV2_ENCODING_LINUX_MD_RAID: CLEAR (Q shard is GF-multiplicative;
+          <li class="normal" id="section-13.1-3.5">
+            <p id="section-13.1-3.5.1">FFV2_ENCODING_LINUX_MD_RAID: CLEAR (Q shard is GF-multiplicative;
 P shard alone is not sufficient to support delta writes on the
-full parity set)<a href="#section-12.1-3.5.1" class="pilcrow">¶</a></p>
+full parity set)<a href="#section-13.1-3.5.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-3.6">
-            <p id="section-12.1-3.6.1">FFV2_ENCODING_RS_VANDERMONDE: CLEAR<a href="#section-12.1-3.6.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.1-3.6">
+            <p id="section-13.1-3.6.1">FFV2_ENCODING_RS_VANDERMONDE: CLEAR<a href="#section-13.1-3.6.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.1-3.7">
-            <p id="section-12.1-3.7.1">FFV2_ENCODING_PASSTHROUGH: not applicable -- PASSTHROUGH layouts
+          <li class="normal" id="section-13.1-3.7">
+            <p id="section-13.1-3.7.1">FFV2_ENCODING_PASSTHROUGH: not applicable -- PASSTHROUGH layouts
 do not carry the chunk envelope this document operates on;
 CHUNK_XOR_DELTA is undefined for PASSTHROUGH layouts and a data
 server <span class="bcp14">MUST</span> return NFS4ERR_NOTSUPP if received against one.  The
 flag value is nominally CLEAR but the operation itself is
-structurally inapplicable.<a href="#section-12.1-3.7.1" class="pilcrow">¶</a></p>
+structurally inapplicable.<a href="#section-13.1-3.7.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
 </div>
 <div id="sec-iana-checksum-flag">
-<section id="section-12.2">
+<section id="section-13.2">
         <h3 id="name-checksum-registry-xor-affin">
-<a href="#section-12.2" class="section-number selfRef">12.2. </a><a href="#name-checksum-registry-xor-affin" class="section-name selfRef">Checksum Registry: XOR-Affine Column</a>
+<a href="#section-13.2" class="section-number selfRef">13.2. </a><a href="#name-checksum-registry-xor-affin" class="section-name selfRef">Checksum Registry: XOR-Affine Column</a>
         </h3>
-<p id="section-12.2-1">Add a new column named "XOR-Affine" (boolean) to the
+<p id="section-13.2-1">Add a new column named "XOR-Affine" (boolean) to the
 "Flexible File Version 2 Layout Type Checksum Algorithm Registry"
 defined in <span>[<a href="#I-D.haynes-nfsv4-flexfiles-v2" class="cite xref">I-D.haynes-nfsv4-flexfiles-v2</a>]</span>.  The column is
-called CHECKSUM_FLAGS_XOR_AFFINE in prose references.<a href="#section-12.2-1" class="pilcrow">¶</a></p>
-<p id="section-12.2-2">Set for algorithms that satisfy the XOR-affine identity defined
-in <a href="#sec-terminology" class="auto internal xref">Section 2</a>; clear otherwise.  Initial assignments:<a href="#section-12.2-2" class="pilcrow">¶</a></p>
+called CHECKSUM_FLAGS_XOR_AFFINE in prose references.<a href="#section-13.2-1" class="pilcrow">¶</a></p>
+<p id="section-13.2-2">Set for algorithms that satisfy the XOR-affine identity defined
+in <a href="#sec-terminology" class="auto internal xref">Section 2</a>; clear otherwise.  Initial assignments:<a href="#section-13.2-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-12.2-3.1">
-            <p id="section-12.2-3.1.1">CHECKSUM_ALG_NONE: SET.  The value is SET, not "not
+<li class="normal" id="section-13.2-3.1">
+            <p id="section-13.2-3.1.1">CHECKSUM_ALG_NONE: SET.  The value is SET, not "not
 applicable", so that the eligibility boolean below is a
 well-defined AND with no per-algorithm exceptions.  The
 semantic justification is that XOR-affinity is a property of
@@ -2565,49 +2614,49 @@ the checksum function; there is no checksum function to fail
 the property when CHECKSUM_ALG_NONE is in use, so the property
 holds vacuously.  The data-server-side checksum-recompute path in
 <a href="#sec-checksum" class="auto internal xref">Section 5</a> is a no-op when CHECKSUM_ALG_NONE is
-configured.<a href="#section-12.2-3.1.1" class="pilcrow">¶</a></p>
+configured.<a href="#section-13.2-3.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.2-3.2">
-            <p id="section-12.2-3.2.1">CHECKSUM_ALG_CRC32: SET<a href="#section-12.2-3.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.2-3.2">
+            <p id="section-13.2-3.2.1">CHECKSUM_ALG_CRC32: SET<a href="#section-13.2-3.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.2-3.3">
-            <p id="section-12.2-3.3.1">CHECKSUM_ALG_CRC32C: SET<a href="#section-12.2-3.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.2-3.3">
+            <p id="section-13.2-3.3.1">CHECKSUM_ALG_CRC32C: SET<a href="#section-13.2-3.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.2-3.4">
-            <p id="section-12.2-3.4.1">CHECKSUM_ALG_FLETCHER4: CLEAR (modular sum; not XOR-linear)<a href="#section-12.2-3.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.2-3.4">
+            <p id="section-13.2-3.4.1">CHECKSUM_ALG_FLETCHER4: CLEAR (modular sum; not XOR-linear)<a href="#section-13.2-3.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.2-3.5">
-            <p id="section-12.2-3.5.1">CHECKSUM_ALG_SHA256: CLEAR (cryptographic hash)<a href="#section-12.2-3.5.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.2-3.5">
+            <p id="section-13.2-3.5.1">CHECKSUM_ALG_SHA256: CLEAR (cryptographic hash)<a href="#section-13.2-3.5.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.2-3.6">
-            <p id="section-12.2-3.6.1">CHECKSUM_ALG_SHA512: CLEAR (cryptographic hash)<a href="#section-12.2-3.6.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.2-3.6">
+            <p id="section-13.2-3.6.1">CHECKSUM_ALG_SHA512: CLEAR (cryptographic hash)<a href="#section-13.2-3.6.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-12.2-3.7">
-            <p id="section-12.2-3.7.1">CHECKSUM_ALG_BLAKE3: CLEAR (cryptographic hash)<a href="#section-12.2-3.7.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-13.2-3.7">
+            <p id="section-13.2-3.7.1">CHECKSUM_ALG_BLAKE3: CLEAR (cryptographic hash)<a href="#section-13.2-3.7.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-12.2-4">A configuration is delta-write-eligible iff both the encoding's
+<p id="section-13.2-4">A configuration is delta-write-eligible iff both the encoding's
 <code>EC_ENC_FLAGS_XOR_DELTA_CAPABLE</code> and the checksum's
 <code>CHECKSUM_FLAGS_XOR_AFFINE</code> are SET.  This is a plain boolean
 conjunction with no per-algorithm exceptions; a registry
 consumer implementing the conjunction directly derives the
 correct answer for every entry, including CHECKSUM_ALG_NONE
-(SET AND SET = SET).<a href="#section-12.2-4" class="pilcrow">¶</a></p>
+(SET AND SET = SET).<a href="#section-13.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="new-error-codes">
-<section id="section-12.3">
+<section id="section-13.3">
         <h3 id="name-new-error-codes">
-<a href="#section-12.3" class="section-number selfRef">12.3. </a><a href="#name-new-error-codes" class="section-name selfRef">New Error Codes</a>
+<a href="#section-13.3" class="section-number selfRef">13.3. </a><a href="#name-new-error-codes" class="section-name selfRef">New Error Codes</a>
         </h3>
-<p id="section-12.3-1">Following the pattern established by <span>[<a href="#I-D.haynes-nfsv4-flexfiles-v2" class="cite xref">I-D.haynes-nfsv4-flexfiles-v2</a>]</span>
+<p id="section-13.3-1">Following the pattern established by <span>[<a href="#I-D.haynes-nfsv4-flexfiles-v2" class="cite xref">I-D.haynes-nfsv4-flexfiles-v2</a>]</span>
 that nfsstat4 codes scoped to the flexible file v2 layout protocol
 family are assigned by publication of the specifying document (no IANA
 nfsstat4 registry exists), this document assigns the codes in
-<a href="#fig-delta-errors-xdr" class="auto internal xref">Figure 9</a>.<a href="#section-12.3-1" class="pilcrow">¶</a></p>
+<a href="#fig-delta-errors-xdr" class="auto internal xref">Figure 11</a>.<a href="#section-13.3-1" class="pilcrow">¶</a></p>
 <span id="name-xdr-for-the-delta-write-err"></span><div id="fig-delta-errors-xdr">
-<figure id="figure-9">
-          <div class="lang-xdr sourcecode" id="section-12.3-2.1">
+<figure id="figure-11">
+          <div class="lang-xdr sourcecode" id="section-13.3-2.1">
 <pre>
    ///
    /// /* Delta-write error constants; added to nfsstat4 enum */
@@ -2617,67 +2666,67 @@ nfsstat4 registry exists), this document assigns the codes in
    ///
 </pre>
 </div>
-<figcaption><a href="#figure-9" class="selfRef">Figure 9</a>:
+<figcaption><a href="#figure-11" class="selfRef">Figure 11</a>:
 <a href="#name-xdr-for-the-delta-write-err" class="selfRef">XDR for the delta-write error codes</a>
           </figcaption></figure>
 </div>
-<span class="break"></span><dl class="dlParallel" id="section-12.3-3">
-          <dt id="section-12.3-3.1">NFS4ERR_DELTA_INCOMPLETE:</dt>
-          <dd style="margin-left: 1.5em" id="section-12.3-3.2">
-            <p id="section-12.3-3.2.1">returned by CHUNK_FINALIZE when the recorded delta-log sequence
-numbers do not form a contiguous range from 1 to N.<a href="#section-12.3-3.2.1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-13.3-3">
+          <dt id="section-13.3-3.1">NFS4ERR_DELTA_INCOMPLETE:</dt>
+          <dd style="margin-left: 1.5em" id="section-13.3-3.2">
+            <p id="section-13.3-3.2.1">returned by CHUNK_FINALIZE when the recorded delta-log sequence
+numbers do not form a contiguous range from 1 to N.<a href="#section-13.3-3.2.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
-<dt id="section-12.3-3.3">NFS4ERR_DELTA_LOG_FULL:</dt>
-          <dd style="margin-left: 1.5em" id="section-12.3-3.4">
-            <p id="section-12.3-3.4.1">returned by CHUNK_XOR_DELTA when the per-chunk delta log would
+<dt id="section-13.3-3.3">NFS4ERR_DELTA_LOG_FULL:</dt>
+          <dd style="margin-left: 1.5em" id="section-13.3-3.4">
+            <p id="section-13.3-3.4.1">returned by CHUNK_XOR_DELTA when the per-chunk delta log would
 overflow.  The client <span class="bcp14">SHOULD</span> close the current epoch and open a new
-one.<a href="#section-12.3-3.4.1" class="pilcrow">¶</a></p>
+one.<a href="#section-13.3-3.4.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
-<p id="section-12.3-4">No IANA action is requested for these codes.  The values 10110 and
+<p id="section-13.3-4">No IANA action is requested for these codes.  The values 10110 and
 10111 are chosen to sit above the base specification's cluster (10100 =
 NFS4ERR_CHUNK_GUARDED and neighbors) with a gap for future
-CHUNK operation codes.<a href="#section-12.3-4" class="pilcrow">¶</a></p>
+CHUNK operation codes.<a href="#section-13.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="new-layout-flag">
-<section id="section-12.4">
+<section id="section-13.4">
         <h3 id="name-new-layout-flag">
-<a href="#section-12.4" class="section-number selfRef">12.4. </a><a href="#name-new-layout-flag" class="section-name selfRef">New Layout Flag</a>
+<a href="#section-13.4" class="section-number selfRef">13.4. </a><a href="#name-new-layout-flag" class="section-name selfRef">New Layout Flag</a>
         </h3>
-<p id="section-12.4-1">Following the same pattern (no IANA registry for flexible file v2 layout
-flags), this document assigns:<a href="#section-12.4-1" class="pilcrow">¶</a></p>
+<p id="section-13.4-1">Following the same pattern (no IANA registry for flexible file v2 layout
+flags), this document assigns:<a href="#section-13.4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-12.4-2.1">
-            <p id="section-12.4-2.1.1">FFV2_FLAGS_DELTA_OWNER_ONLY = 0x00000100: restricts
+<li class="normal" id="section-13.4-2.1">
+            <p id="section-13.4-2.1.1">FFV2_FLAGS_DELTA_OWNER_ONLY = 0x00000100: restricts
 CHUNK_XOR_DELTA epochs to the current chunk_owner4 of the target
-chunk.<a href="#section-12.4-2.1.1" class="pilcrow">¶</a></p>
+chunk.<a href="#section-13.4-2.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-12.4-3">The bit value 0x00000100 is chosen to sit clear of
+<p id="section-13.4-3">The bit value 0x00000100 is chosen to sit clear of
 FFV2_FLAGS_ONLY_ONE_WRITER (0x00000010, base specification) and the
 low-order bits inherited from ff_flags4.  No IANA action is
-requested.<a href="#section-12.4-3" class="pilcrow">¶</a></p>
+requested.<a href="#section-13.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="sec-combined-references">
-<section id="section-13">
+<section id="section-14">
       <h2 id="name-references">
-<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-14" class="section-number selfRef">14. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
 <div id="sec-normative-references">
-<section id="section-13.1">
+<section id="section-14.1">
         <h3 id="name-normative-references">
-<a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-14.1" class="section-number selfRef">14.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
 <dt id="I-D.haynes-nfsv4-flexfiles-v2">[I-D.haynes-nfsv4-flexfiles-v2]</dt>
         <dd>
-<span class="refAuthor">Haynes, T.</span>, <span class="refTitle">"Parallel NFS (pNFS) Flexible File Layout Version 2"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-haynes-nfsv4-flexfiles-v2-07</span>, <time datetime="2026-07-24" class="refDate">24 July 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-haynes-nfsv4-flexfiles-v2-07">https://datatracker.ietf.org/doc/html/draft-haynes-nfsv4-flexfiles-v2-07</a>&gt;</span>. </dd>
+<span class="refAuthor">Haynes, T.</span>, <span class="refTitle">"Parallel NFS (pNFS) Flexible File Layout Version 2"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-haynes-nfsv4-flexfiles-v2-08</span>, <time datetime="2026-08-07" class="refDate">7 August 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-haynes-nfsv4-flexfiles-v2-08">https://datatracker.ietf.org/doc/html/draft-haynes-nfsv4-flexfiles-v2-08</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>
@@ -2691,6 +2740,10 @@ requested.<a href="#section-12.4-3" class="pilcrow">¶</a></p>
         <dd>
 <span class="refAuthor">Shepler, S., Ed.</span>, <span class="refAuthor">Eisler, M., Ed.</span>, and <span class="refAuthor">D. Noveck, Ed.</span>, <span class="refTitle">"Network File System (NFS) Version 4 Minor Version 1 Protocol"</span>, <span class="seriesInfo">RFC 5661</span>, <span class="seriesInfo">DOI 10.17487/RFC5661</span>, <time datetime="2010-01" class="refDate">January 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5661">https://www.rfc-editor.org/rfc/rfc5661</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC7863">[RFC7863]</dt>
+        <dd>
+<span class="refAuthor">Haynes, T.</span>, <span class="refTitle">"Network File System (NFS) Version 4 Minor Version 2 External Data Representation Standard (XDR) Description"</span>, <span class="seriesInfo">RFC 7863</span>, <span class="seriesInfo">DOI 10.17487/RFC7863</span>, <time datetime="2016-11" class="refDate">November 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7863">https://www.rfc-editor.org/rfc/rfc7863</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
       <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
@@ -2699,14 +2752,18 @@ requested.<a href="#section-12.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-informative-references">
-<section id="section-13.2">
+<section id="section-14.2">
         <h3 id="name-informative-references">
-<a href="#section-13.2" class="section-number selfRef">13.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+<a href="#section-14.2" class="section-number selfRef">14.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
 <dt id="MOJETTE-1995">[MOJETTE-1995]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Guédon, J-P.</span> and <span class="refAuthor">N. Normand</span>, <span class="refTitle">"The Mojette Transform: Application to Image Coding"</span>, <time datetime="1995" class="refDate">1995</time>. </dd>
+<dd class="break"></dd>
+<dt id="POSIX">[POSIX]</dt>
+      <dd>
+<span class="refAuthor">IEEE</span> and <span class="refAuthor">The Open Group</span>, <span class="refTitle">"IEEE Standard for Information Technology--Portable Operating System Interface (POSIX) Base Specifications, Issue 8"</span>, <span class="seriesInfo">IEEE Std 1003.1-2024</span>, <time datetime="2024" class="refDate">2024</time>, <span>&lt;<a href="https://standards.ieee.org/ieee/1003.1/7700/">https://standards.ieee.org/ieee/1003.1/7700/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
