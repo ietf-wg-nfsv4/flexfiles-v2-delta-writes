@@ -29,11 +29,21 @@ author:
     email: loghyr@gmail.com
 
 normative:
+  RFC7863:
   RFC4506:
   RFC5661:
   I-D.haynes-nfsv4-flexfiles-v2:
 
 informative:
+  POSIX:
+    title: "IEEE Standard for Information Technology--Portable Operating System Interface (POSIX) Base Specifications, Issue 8"
+    author:
+    - org: IEEE
+    - org: The Open Group
+    seriesinfo:
+      IEEE: Std 1003.1-2024
+    date: 2024
+    target: https://standards.ieee.org/ieee/1003.1/7700/
   MOJETTE-1995:
     title: "The Mojette Transform: Application to Image Coding"
     author:
@@ -816,6 +826,39 @@ and {{I-D.haynes-nfsv4-flexfiles-v2}} already tear
 down the client's authority to write, and the data server's duty on
 revocation is to preserve the last-committed state -- which is
 exactly what pre-epoch rollback delivers.
+
+# XDR Description of the CHUNK_XOR_DELTA Operation {#sec-xdr-extraction}
+
+This document contains the External Data Representation (XDR)
+{{RFC4506}} description of the CHUNK_XOR_DELTA Operation.  The XDR
+description is embedded in this document in a way that makes it simple
+for the reader to extract into a ready-to-compile form.  The reader can
+feed this document into the shell script in {{fig-extract}}, which
+relies on the sh, grep, and sed utilities as specified by {{POSIX}},
+to produce the machine-readable XDR description.
+
+~~~ shell
+#!/bin/sh
+grep '^ *///' $* | sed 's?^ */// ??' | sed 's?^ *///$??'
+~~~
+{: #fig-extract title="extract.sh"}
+
+That is, if the above script is stored in a file called "extract.sh"
+and this document is in a file called "spec.txt", then the reader can
+run the script as in {{fig-extract-example}}.
+
+~~~ shell
+sh extract.sh < spec.txt > flex_files2_delta_prot.x
+~~~
+{: #fig-extract-example title="Example use of extract.sh"}
+
+The effect of the script is to remove leading blank space from each
+line, plus a sentinel sequence of "///".
+
+The XDR extracted from this document is not self-contained: it
+amends the XDR of {{RFC7863}} and {{I-D.haynes-nfsv4-flexfiles-v2}},
+and the amendment blocks are to be placed at the extension points
+those documents define.
 
 # Security Considerations {#sec-security}
 
